@@ -1,7 +1,7 @@
 # Pitch result: ?
-- id: `20260508-162520-reddit-04583765dfe34f47`
-- final_verdict: **NO-GO**
-- avg_score: 4.1/10
+- id: `20260508-171746-reddit-04583765dfe34f47`
+- final_verdict: **PIVOT**
+- avg_score: 5.0/10
 
 ## Panel breakdown
 
@@ -11,9 +11,9 @@
 **Strengths:**
 
 **Concerns:**
-- panel response unparseable
+- LLM unavailable: RuntimeError
 
-**What to change**: re-run pitch with cleaner inputs
+**What to change**: re-run when LLM providers recover
 
 ### Angel Investor — PIVOT (5/10)
 **would_invest_or_pay**: False
@@ -45,12 +45,15 @@
 
 **What to change**: re-run when LLM providers recover
 
-### Thai Market Analyst — None (None/10)
-**would_invest_or_pay**: True
+### Thai Market Analyst — PIVOT (5/10)
+**would_invest_or_pay**: False
 
 **Strengths:**
 
 **Concerns:**
+- LLM unavailable: RuntimeError
+
+**What to change**: re-run when LLM providers recover
 
 ### Target Customer — PIVOT (5/10)
 **would_invest_or_pay**: False
@@ -58,6 +61,6 @@
 **Strengths:**
 
 **Concerns:**
-- panel response unparseable
+- LLM unavailable: RuntimeError
 
-**What to change**: re-run pitch with cleaner inputs
+**What to change**: re-run when LLM providers recover
