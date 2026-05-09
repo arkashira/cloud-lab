@@ -1,0 +1,188 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Pre‑configured VPC template with Internet Gateway, NAT Gateway, custom route tables, and security groups.",
+  "Parameters": {
+    "VpcCidr": {
+      "Type": "String",
+      "Default": "10.0.0.0/16",
+      "Description": "CIDR block for the VPC"
+    },
+    "PublicSubnetCidr": {
+      "Type": "String",
+      "Default": "10.0.0.0/24",
+      "Description": "CIDR block for the public subnet"
+    },
+    "PrivateSubnetCidr": {
+      "Type": "String",
+      "Default": "10.0.1.0/24",
+      "Description": "CIDR block for the private subnet"
+    },
+    "AllowedSshCidr": {
+      "Type": "String",
+      "Default": "0.0.0.0/0",
+      "Description": "CIDR block allowed to SSH into instances"
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": { "Ref": "VpcCidr" },
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-vpc" }]
+      }
+    },
+
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-igw" }]
+      }
+    },
+
+    "VPCGatewayAttachment": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "InternetGatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+
+    "PublicSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Ref": "PublicSubnetCidr" },
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone": { "Fn::Select": [ "0", { "Fn::GetAZs": "" } ] },
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-public-subnet" }]
+      }
+    },
+
+    "PrivateSubnet": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "CidrBlock": { "Ref": "PrivateSubnetCidr" },
+        "MapPublicIpOnLaunch": false,
+        "AvailabilityZone": { "Fn::Select": [ "0", { "Fn::GetAZs": "" } ] },
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-private-subnet" }]
+      }
+    },
+
+    "NatEIP": {
+      "Type": "AWS::EC2::EIP",
+      "DependsOn": "VPCGatewayAttachment",
+      "Properties": {
+        "Domain": "vpc"
+      }
+    },
+
+    "NatGateway": {
+      "Type": "AWS::EC2::NatGateway",
+      "DependsOn": "PublicSubnet",
+      "Properties": {
+        "AllocationId": { "Fn::GetAtt": [ "NatEIP", "AllocationId" ] },
+        "SubnetId": { "Ref": "PublicSubnet" },
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-natgw" }]
+      }
+    },
+
+    "PublicRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-public-rt" }]
+      }
+    },
+
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "DependsOn": "VPCGatewayAttachment",
+      "Properties": {
+        "RouteTableId": { "Ref": "PublicRouteTable" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": { "Ref": "InternetGateway" }
+      }
+    },
+
+    "PublicSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PublicSubnet" },
+        "RouteTableId": { "Ref": "PublicRouteTable" }
+      }
+    },
+
+    "PrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": { "Ref": "VPC" },
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-private-rt" }]
+      }
+    },
+
+    "PrivateRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": { "Ref": "PrivateRouteTable" },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": { "Ref": "NatGateway" }
+      }
+    },
+
+    "PrivateSubnetRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": { "Ref": "PrivateSubnet" },
+        "RouteTableId": { "Ref": "PrivateRouteTable" }
+      }
+    },
+
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Security group for instances in the VPC",
+        "VpcId": { "Ref": "VPC" },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": { "Ref": "AllowedSshCidr" },
+            "Description": "Allow SSH from allowed CIDR"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "-1",
+            "FromPort": 0,
+            "ToPort": 0,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic"
+          }
+        ],
+        "Tags": [{ "Key": "Name", "Value": "cloud-lab-instance-sg" }]
+      }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Description": "ID of the created VPC",
+      "Value": { "Ref": "VPC" }
+    },
+    "PublicSubnetId": {
+      "Description": "ID of the public subnet",
+      "Value": { "Ref": "PublicSubnet" }
+    },
+    "PrivateSubnetId": {
+      "Description": "ID of the private subnet",
+      "Value": { "Ref": "PrivateSubnet" }
+    },
+    "InstanceSecurityGroupId": {
+      "Description": "Security Group ID for instances",
+      "Value": { "Ref": "InstanceSecurityGroup" }
+    }
+  }
+}
