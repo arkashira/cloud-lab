@@ -1,0 +1,33 @@
+---
+- name: Ensure essential packages are installed
+  apt:
+    name:
+      - curl
+      - wget
+      - vim
+      - git
+      - htop
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Create admin group
+  group:
+    name: admin
+    system: yes
+    state: present
+
+- name: Create devops user
+  user:
+    name: devops
+    group: admin
+    shell: /bin/bash
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_file: .ssh/id_rsa
+
+- name: Set up authorized keys for devops user
+  authorized_key:
+    user: devops
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  delegate_to: "{{ inventory_hostname }}"

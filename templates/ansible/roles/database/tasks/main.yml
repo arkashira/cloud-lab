@@ -1,0 +1,26 @@
+---
+- name: Install PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: Start and enable PostgreSQL
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Ensure PostgreSQL database exists
+  postgresql_db:
+    name: cloudlab_db
+    state: present
+
+- name: Ensure PostgreSQL user exists
+  postgresql_user:
+    name: cloudlab_user
+    password: "{{ 'cloudlab_password' | quote }}"
+    role_attr_flags: LOGIN
+    state: present
