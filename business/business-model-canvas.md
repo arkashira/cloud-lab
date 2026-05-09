@@ -1,3 +1,60 @@
-# business-model-canvas.md
+## Customer Segments
+* Individual developers and students seeking to practice and learn AWS services without financial risk
+* Small to medium-sized businesses (SMBs) and startups with limited budgets for cloud infrastructure
+* Educational institutions and training organizations looking for a collaborative learning environment for cloud computing
+* Freelance developers and consultants who need to demonstrate AWS skills to clients
 
-Generation failed: all LLM providers failed; last=hf-final: HTTP Error 402: Payment Required (after Codespace-fleet: all codespace endpoints down: no endpoint tried (after HF-Inference: HTTP 402 (after CF-AI/@cf/meta/llama-3.1-8b-instruct: HTTP 429 (after Chutes-Gemma-4-31B/google/gemma-4-31B-turbo-TEE: HTTP 429)))); cooldowns: ['CF-AI', 'CF-Gateway-Groq', 'CF-Gateway-WAI', 'Cerebras', 'Cerebras-Llama', 'Chutes-DeepSeek-V3.1', 'Chutes-GLM-5.1', 'Chutes-Gemma-4-31B', 'Chutes-Kimi-K2.5', 'Chutes-MiniMax-M2.5', 'Chutes-Qwen3-32B', 'Chutes-Qwen3.5-397B', 'Codespace-LLM-0', 'DeepSeek', 'DeepSeek-R1', 'G4F-Gemini-2.5-Flash', 'G4F-Gemini-2.5-Pro', 'G4F-Groq-Llama-3.3-70B', 'G4F-Ollama-DeepSeek-V4-Pro', 'G4F-Ollama-Devstral-2-123B', 'G4F-Ollama-GLM-5.1', 'G4F-Ollama-GPT-OSS-120B', 'G4F-Ollama-Gemma3-12B', 'G4F-Ollama-Gemma3-4B', 'G4F-Ollama-Kimi-K2.6', 'G4F-Ollama-MiniMax-M2.5', 'G4F-Ollama-Nemotron-3-Super', 'G4F-Ollama-Qwen3-Next-80B', 'G4F-Perplexity-Turbo', 'Gemini', 'GitHub-Models-1', 'GitHub-Models-10', 'GitHub-Models-2', 'GitHub-Models-3', 'GitHub-Models-4', 'GitHub-Models-5', 'GitHub-Models-6', 'GitHub-Models-7', 'GitHub-Models-8', 'GitHub-Models-9', 'Groq', 'HF-Router-DeepSeek-V4', 'HF-Router-Kimi-K2', 'HF-Router-Ling-1T', 'HF-Router-Qwen3-235B', 'HF-Router-Qwen3-Coder-2', 'HF-Router-Qwen3-Coder-3', 'HF-Router-Qwen3-Coder-4', 'HF-Router-Qwen3-Coder-5', 'LLM7-GLM-4.6V-Flash', 'OVH-Llama-3.1-8B', 'OVH-Qwen2.5-VL-72B', 'OVH-Qwen3Guard-0.6B', 'OpenRouter-Free-Gemma-3-12B', 'OpenRouter-Free-Gemma-3N-E4B', 'OpenRouter-Free-Nemotron-Nano-9B', 'Pollinations-CodeQwen', 'Pollinations-DeepSeek-Coder', 'Pollinations-DeepSeek-V3', 'Pollinations-Grok', 'Pollinations-O1', 'Pollinations-O3', 'Pollinations-Qwen-2.5', 'Pollinations-Sao', 'Pollinations-SearchGPT', 'Pollinations-Sur-Mistral', 'SambaNova', 'Together', 'Together-Qwen', 'ZAI-GLM-4.5-Flash', 'ZAI-GLM-4.7-Flash', 'ZeroGPU-Coder-1', 'ZeroGPU-Coder-2', 'v1']
+## Value Propositions
+* Collaborative workspace for team projects with shared IaC environments
+* Integration with GitLab for version control and collaboration
+* Risk-free practice and learning environment for AWS services
+* Cost-effective solution for SMBs and startups with limited budgets
+* Enhanced learning experience through shared resources and expertise
+
+## Channels
+* Online marketing and advertising (Google Ads, social media, etc.)
+* Partnerships with educational institutions and training organizations
+* Word-of-mouth referrals and community building (e.g., GitHub, Reddit, etc.)
+* Content marketing (blog posts, tutorials, webinars, etc.)
+* Integration with existing cloud-lab user base and feedback mechanisms
+
+## Customer Relationships
+* Personalized onboarding and support for new users
+* Regular updates and feature releases based on user feedback
+* Community-driven support and knowledge sharing (e.g., forums, Slack channels, etc.)
+* Strategic partnerships with key customers for feedback and guidance
+* Proactive issue resolution and bug fixing
+
+## Revenue Streams
+* **Starter Tier**: $9.99/user/mo (฿349.91/user/mo) - limited to 5 users and 10 projects
+* **Team Tier**: $29.99/user/mo (฿1,049.13/user/mo) - up to 20 users and 50 projects
+* **Enterprise Tier**: $49.99/user/mo (฿1,749.11/user/mo) - unlimited users and projects, with dedicated support and customization options
+* **Education Tier**: $4.99/user/mo (฿174.91/user/mo) - limited to 10 users and 20 projects, with discounts for bulk purchases
+
+## Key Resources
+* Development team with expertise in cloud computing, collaboration tools, and DevOps
+* Infrastructure and maintenance costs for cloud-lab platform
+* Marketing and advertising budget for user acquisition and retention
+* Partnerships with educational institutions and training organizations
+* Community engagement and support team
+
+## Key Activities
+* Developing and maintaining the cloud-lab platform and collaborative features
+* Marketing and promoting the platform to target customer segments
+* Building and maintaining partnerships with educational institutions and training organizations
+* Providing customer support and resolving issues
+* Continuously gathering user feedback and iterating on the platform
+
+## Key Partners
+* AWS for cloud infrastructure and services
+* GitLab for version control and collaboration
+* Educational institutions and training organizations for partnerships and feedback
+* Industry experts and thought leaders for guidance and validation
+* Other complementary tool and service providers for potential integrations
+
+## Cost Structure
+* Development and maintenance costs: $10,000/mo (฿349,910/mo)
+* Infrastructure and hosting costs: $5,000/mo (฿174,955/mo)
+* Marketing and advertising expenses: $8,000/mo (฿279,832/mo)
+* Salaries and benefits for support and community team: $12,000/mo (฿419,876/mo)
+* Miscellaneous expenses (office, travel, etc.): $2,000/mo (฿69,991/mo)

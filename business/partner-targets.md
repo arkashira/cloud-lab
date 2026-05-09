@@ -1,35 +1,3 @@
 # partner-targets.md
 
-## Partner Integration Roadmap – cloud‑lab
-
-| # | Partner | Free‑Tier Limits | Integration Effort | Value‑Add (User Job Solved) | Revenue‑Share / Affiliate | Priority |
-|---|---------|------------------|--------------------|-----------------------------|---------------------------|----------|
-| 1 | **GitHub** | Unlimited public repos, 5 000 Actions minutes/month, 2 GB storage | **S** | *Code & CI/CD*: Host user code, run automated tests inside the sandbox. | GitHub Marketplace (≈ 5 % revenue share on paid plans) | ★★★★★ |
-| 2 | **Terraform Cloud** | 5 users, 5 concurrent runs, 5 000 runs/month, 5 000 MB state | **M** | *IaC Provisioning*: Declarative infra setup for sandbox environments. | Terraform Cloud Partner Program (≈ 10 % referral fee) | ★★★★☆ |
-| 3 | **Pulumi** | 5 users, 5 concurrent runs, 5 000 runs/month, 5 000 MB state | **M** | *IaC Provisioning (alternative)*: Support for Pulumi‑based stacks. | Pulumi Partner Program (≈ 8 % referral fee) | ★★★★☆ |
-| 4 | **Cloud Academy** | 30‑day free trial, 1 course/month | **S** | *Learning Path*: Curated AWS labs & quizzes integrated into the sandbox. | Affiliate (≈ 20 % per paid subscription) | ★★★★★ |
-| 5 | **A Cloud Guru** | 14‑day free trial, 1 course/month | **S** | *Learning Path*: Interactive video tutorials & hands‑on labs. | Affiliate (≈ 15 % per paid subscription) | ★★★★★ |
-| 6 | **Replit** | 500 MB storage, 500 MB RAM, 1 GB bandwidth, 1 GB database | **S** | *Instant IDE*: In‑browser code editor that can launch sandboxed AWS resources. | Replit Affiliate (≈ 10 % per new user) | ★★★★☆ |
-| 7 | **AWS Educate** | 1 000 credits, 1‑year validity | **S** | *Credit‑Based Sandbox*: Free AWS credits for students and educators. | No direct revenue share – but drives user acquisition. | ★★★☆☆ |
-| 8 | **AWS Marketplace** | 0 $ (free tier) | **M** | *Marketplace SaaS*: Plug‑in third‑party tools (e.g., monitoring, security) into the sandbox. | 30 % revenue share on SaaS subscriptions | ★★★★☆ |
-
-### Integration Timeline
-
-| Quarter | Milestone | Deliverables |
-|---------|-----------|--------------|
-| **Q3 2026** | GitHub & Replit | OAuth flow, Actions runner integration, in‑browser IDE |
-| **Q4 2026** | Terraform Cloud & Pulumi | IaC provisioning API, state sync, run queue |
-| **Q1 2027** | Cloud Academy & A Cloud Guru | Course catalog sync, progress tracking, badge system |
-| **Q2 2027** | AWS Educate | Credit redemption UI, educator portal |
-| **Q3 2027** | AWS Marketplace | SaaS catalog API, subscription flow, billing integration |
-
-### Key Metrics & Success Criteria
-
-| Metric | Target |
-|--------|--------|
-| Partner sign‑ups | 5 partners by Q3 2026 |
-| Monthly active users (MAU) from partner traffic | 20 % of total MAU |
-| Revenue from affiliate/referral | 15 % of total recurring revenue |
-| Integration completion | 90 % of planned features delivered on schedule |
-
-> **Note**: All partners are selected for their *free‑tier attractiveness* (low entry barrier for users) and *revenue‑share potential*. The roadmap prioritizes quick wins (GitHub, Replit) to bootstrap user growth, followed by IaC and learning partners that deepen engagement and create recurring revenue streams.
+Generation failed: all LLM providers failed; last=hf-final: HTTP Error 402: Payment Required (after surrogate-v1: v1: SSE returned no usable data (after Codespace-fleet: all codespace endpoints down: no endpoint tried (after HF-Inference: HTTP 402 (after OVH-Qwen3Guard-0.6B/Qwen3Guard-Gen-0.6B: HTTP 429)))); cooldowns: ['CF-AI', 'CF-Gateway-Cerebras', 'CF-Gateway-Groq', 'CF-Gateway-WAI', 'Cerebras', 'Cerebras-Llama', 'Chutes-DeepSeek-V3.1', 'Chutes-GLM-5.1', 'Chutes-Gemma-4-31B', 'Chutes-Kimi-K2.5', 'Chutes-MiniMax-M2.5', 'Chutes-Qwen3.5-397B', 'Codespace-LLM-0', 'DeepSeek', 'DeepSeek-R1', 'DeepSeek-V3', 'G4F-Gemini-2.5-Flash', 'G4F-Gemini-2.5-Pro', 'G4F-Groq-Llama-3.3-70B', 'G4F-Ollama-DeepSeek-V4-Pro', 'G4F-Ollama-Devstral-2-123B', 'G4F-Ollama-GLM-5.1', 'G4F-Ollama-GPT-OSS-120B', 'G4F-Ollama-Gemma3-12B', 'G4F-Ollama-Gemma3-4B', 'G4F-Ollama-Kimi-K2.6', 'G4F-Ollama-MiniMax-M2.5', 'G4F-Ollama-Nemotron-3-Super', 'G4F-Ollama-Qwen3-Next-80B', 'G4F-Perplexity-Turbo', 'Gemini', 'GitHub-Models-1', 'GitHub-Models-10', 'GitHub-Models-2', 'GitHub-Models-3', 'GitHub-Models-5', 'GitHub-Models-6', 'GitHub-Models-7', 'GitHub-Models-8', 'GitHub-Models-9', 'Groq', 'HF-Router-DeepSeek-V4', 'HF-Router-Kimi-K2', 'HF-Router-Ling-1T', 'HF-Router-Qwen3-235B', 'HF-Router-Qwen3-Coder-1', 'HF-Router-Qwen3-Coder-2', 'HF-Router-Qwen3-Coder-3', 'HF-Router-Qwen3-Coder-4', 'HF-Router-Qwen3-Coder-5', 'LLM7-Codestral', 'LLM7-GLM-4.6V-Flash', 'NVIDIA-NIM', 'OVH-Llama-3.3-70B', 'OVH-Mistral-7B', 'OVH-Mistral-Nemo', 'OVH-Mistral-Small-24B', 'OVH-Qwen2.5-VL-72B', 'OVH-Qwen3-32B', 'OVH-Qwen3.5-9B', 'OpenRouter-Free-GLM-4.5-Air', 'OpenRouter-Free-GPT-OSS-120B', 'OpenRouter-Free-Nemotron-Nano-30B', 'OpenRouter-Free-Nemotron-Nano-9B', 'Pollinations-ChatGPT-4o', 'Pollinations-CodeQwen', 'Pollinations-DeepSeek', 'Pollinations-DeepSeek-V3', 'Pollinations-Elixposearch', 'Pollinations-Haiku', 'Pollinations-Llama-3.3', 'Pollinations-O1', 'Pollinations-O3', 'Pollinations-Sao', 'Pollinations-SearchGPT', 'Pollinations-Sur-Mistral', 'Pollinations-Yi', 'SambaNova', 'Together', 'Together-Llama3.3-70B-Free', 'Together-Qwen', 'Together-Qwen2.5-72B', 'ZAI-GLM-4-Plus', 'ZAI-GLM-4.5-Flash', 'ZAI-GLM-4.7-Flash', 'ZeroGPU-Coder-1', 'ZeroGPU-Coder-2', 'v1']
