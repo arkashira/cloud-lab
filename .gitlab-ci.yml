@@ -1,0 +1,27 @@
+stages:
+  - validate
+  - provision
+  - test
+
+validate:
+  stage: validate
+  image: hashicorp/terraform:latest
+  script:
+    - terraform fmt -check
+    - terraform validate
+  timeout: 5 min
+
+provision:
+  stage: provision
+  image: hashicorp/terraform:latest
+  script:
+    - terraform apply -auto-approve
+    - ansible-playbook -i inventory playbook.yml
+  timeout: 10 min
+
+test:
+  stage: test
+  image: curlimages/curl:latest
+  script:
+    - curl -f http://localhost:8080/ || exit 1
+  timeout: 5 min
