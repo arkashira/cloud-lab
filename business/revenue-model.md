@@ -1,3 +1,72 @@
-# revenue-model.md
+```markdown
+# Revenue Model
 
-Generation failed: all LLM providers failed; last=hf-final: HTTP Error 402: Payment Required (after surrogate-v1: v1: SSE returned no usable data (after Gemini: HTTP 429 (after Codespace-fleet: all codespace endpoints down: Codespace-LLM-0: HTTP 404 (after HF-Inference: HTTP 402 (after CF-AI/@cf/meta/llama-3.1-8b-instruct: HTTP 429 (after Chutes-MiniMax-M2.5/MiniMaxAI/MiniMax-M2.5-TEE: HTTP 429)))))); cooldowns: ['CF-AI', 'CF-Gateway-Cerebras', 'CF-Gateway-Groq', 'CF-Gateway-WAI', 'Cerebras', 'Cerebras-Llama', 'Chutes-GLM-5.1', 'Chutes-Gemma-4-31B', 'Chutes-Kimi-K2.5', 'Chutes-MiniMax-M2.5', 'Chutes-Qwen3-32B', 'Chutes-Qwen3.5-397B', 'Codespace-LLM-0', 'DeepSeek', 'DeepSeek-R1', 'DeepSeek-V3', 'G4F-Gemini-2.5-Flash', 'G4F-Gemini-2.5-Pro', 'G4F-Groq-Llama-3.3-70B', 'G4F-Ollama-Devstral-2-123B', 'G4F-Ollama-GLM-5.1', 'G4F-Ollama-GPT-OSS-120B', 'G4F-Ollama-Gemma3-12B', 'G4F-Ollama-Gemma3-4B', 'G4F-Ollama-Kimi-K2.6', 'G4F-Ollama-MiniMax-M2.5', 'G4F-Ollama-Nemotron-3-Super', 'G4F-Ollama-Qwen3-Next-80B', 'G4F-Perplexity-Turbo', 'Gemini', 'GitHub-Models-1', 'GitHub-Models-10', 'GitHub-Models-2', 'GitHub-Models-3', 'GitHub-Models-4', 'GitHub-Models-5', 'GitHub-Models-6', 'GitHub-Models-7', 'GitHub-Models-8', 'GitHub-Models-9', 'Groq', 'HF-Router-Kimi-K2', 'HF-Router-Ling-1T', 'HF-Router-Qwen3-235B', 'HF-Router-Qwen3-Coder-1', 'HF-Router-Qwen3-Coder-2', 'HF-Router-Qwen3-Coder-3', 'HF-Router-Qwen3-Coder-4', 'HF-Router-Qwen3-Coder-5', 'LLM7-Codestral', 'LLM7-GLM-4.6V-Flash', 'NVIDIA-NIM', 'OVH-Mistral-7B', 'OVH-Mistral-Nemo', 'OVH-Mistral-Small-24B', 'OVH-Qwen2.5-VL-72B', 'OVH-Qwen3.5-9B', 'OVH-Qwen3Guard-0.6B', 'OpenRouter', 'OpenRouter-Free-GPT-OSS-120B', 'OpenRouter-Free-GPT-OSS-20B', 'OpenRouter-Free-Qwen3-Coder', 'Pollinations-ChatGPT-4o', 'Pollinations-CodeQwen', 'Pollinations-DeepSeek', 'Pollinations-GPT-5', 'Pollinations-Grok-3', 'Pollinations-Haiku', 'Pollinations-Llamascout', 'Pollinations-O3', 'Pollinations-Qwen-2.5', 'Pollinations-Qwen3', 'Pollinations-Sao', 'Pollinations-SearchGPT', 'Pollinations-Sur', 'Pollinations-Sur-Mistral', 'Pollinations-Yi', 'SambaNova', 'Together', 'Together-Llama3.3-70B-Free', 'Together-Qwen', 'Together-Qwen2.5-72B', 'ZeroGPU-Coder-1', 'ZeroGPU-Coder-2', 'v1']
+## Pricing Tiers
+
+### **Starter Tier**
+- **$29/seat/month**
+- **Included Quotas:**
+  - 5 concurrent users
+  - 10 shared IaC environments
+  - 100 GitLab sync events/month
+  - 500 hours of sandbox runtime
+  - Basic support tickets (1/week)
+- **Who Buys This Tier:** Small teams (<10 members), educational institutions, individual practitioners
+
+### **Professional Tier**
+- **$79/seat/month**
+- **Included Quotas:**
+  - 25 concurrent users
+  - 50 shared IaC environments
+  - 1,000 GitLab sync events/month
+  - 2,000 hours of sandbox runtime
+  - Priority support tickets (1/day)
+  - Advanced compliance scanning
+- **Who Buys This Tier:** Mid-sized enterprises, dev teams, startups
+
+### **Enterprise Tier**
+- **$199/seat/month**
+- **Included Quotas:**
+  - Unlimited concurrent users
+  - Unlimited shared IaC environments
+  - Unlimited GitLab sync events
+  - Unlimited sandbox runtime
+  - 24/7 dedicated support
+  - Custom compliance profiles
+  - SSO & RBAC controls
+- **Who Buys This Tier:** Large enterprises, Fortune 500 companies, government agencies
+
+## Free Tier Limits
+
+- **1 concurrent user**
+- **2 shared IaC environments**
+- **10 GitLab sync events/month**
+- **50 hours of sandbox runtime**
+- **Basic support (no SLA)**
+
+## Annual/Monthly Split Assumption
+
+- **30% annual billing (20% discount)**
+- **70% monthly billing**
+
+## Expansion Revenue Path
+
+### Seat Growth
+- Average customer increases by 1.5 seats/month
+- 15% of customers add 1+ seats annually
+- Estimated seat growth rate: 18% YoY
+
+### Usage Growth
+- Average monthly runtime increases by 25%
+- GitLab sync events grow by 30% YoY
+- IaC environment utilization grows by 20% YoY
+
+## Anti-Cannibalization Strategy
+
+Customers won't downgrade because:
+1. **Compliance Requirements**: Enterprise customers require advanced compliance features only available in Professional/Enterprise tiers
+2. **Performance Needs**: High-concurrency workloads exceed Starter tier limits
+3. **Support SLAs**: Critical operations demand 24/7 support unavailable in free/Starter tiers
+4. **Security Controls**: SSO/RBAC requirements are enterprise-only features
+5. **Custom Integrations**: Advanced GitLab integrations and API access are restricted to paid tiers
+```

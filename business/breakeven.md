@@ -1,3 +1,69 @@
-# breakeven.md
+```markdown
+# Breakeven Analysis
 
-Generation failed: all LLM providers failed; last=hf-final: HTTP Error 402: Payment Required (after Codespace-fleet: all codespace endpoints down: no endpoint tried (after HF-Inference: HTTP 402 (after G4F-Ollama-Devstral-2-123B/devstral-2:123b: HTTP 429))); cooldowns: ['CF-AI', 'CF-Gateway-Cerebras', 'CF-Gateway-Groq', 'CF-Gateway-WAI', 'Cerebras', 'Cerebras-Llama', 'Chutes-DeepSeek-V3.1', 'Chutes-GLM-5.1', 'Chutes-Gemma-4-31B', 'Chutes-Kimi-K2.5', 'Chutes-MiniMax-M2.5', 'Chutes-Qwen3-32B', 'Chutes-Qwen3.5-397B', 'Codespace-LLM-0', 'DeepSeek', 'DeepSeek-R1', 'DeepSeek-V3', 'G4F-Gemini-2.5-Flash', 'G4F-Gemini-2.5-Pro', 'G4F-Groq-Llama-3.3-70B', 'G4F-Ollama-DeepSeek-V4-Pro', 'G4F-Ollama-Devstral-2-123B', 'G4F-Ollama-GLM-5.1', 'G4F-Ollama-GPT-OSS-120B', 'G4F-Ollama-Gemma3-12B', 'G4F-Ollama-Gemma3-4B', 'G4F-Ollama-Kimi-K2.6', 'G4F-Ollama-MiniMax-M2.5', 'G4F-Ollama-Nemotron-3-Super', 'G4F-Ollama-Qwen3-Next-80B', 'G4F-Perplexity-Turbo', 'Gemini', 'GitHub-Models-1', 'GitHub-Models-10', 'GitHub-Models-2', 'GitHub-Models-3', 'GitHub-Models-4', 'GitHub-Models-5', 'GitHub-Models-6', 'GitHub-Models-7', 'GitHub-Models-8', 'GitHub-Models-9', 'Groq', 'HF-Router-DeepSeek-V4', 'HF-Router-Ling-1T', 'HF-Router-Qwen3-235B', 'HF-Router-Qwen3-Coder-1', 'HF-Router-Qwen3-Coder-2', 'HF-Router-Qwen3-Coder-3', 'HF-Router-Qwen3-Coder-4', 'HF-Router-Qwen3-Coder-5', 'LLM7-Codestral', 'LLM7-GPT-4o-Mini', 'LLM7-Mistral', 'OVH-Qwen3-32B', 'OVH-Qwen3Guard-0.6B', 'OpenRouter-Free-GLM-4.5-Air', 'OpenRouter-Free-GPT-OSS-120B', 'OpenRouter-Free-GPT-OSS-20B', 'OpenRouter-Free-Liquid-LFM-2.5', 'OpenRouter-Free-MiniMax-M2.5', 'OpenRouter-Free-NVIDIA-Nemotron-120B', 'OpenRouter-Free-Nemotron-Nano-30B', 'OpenRouter-Free-Qwen3-Coder', 'OpenRouter-Free-Qwen3-Next-80B', 'Pollinations-ChatGPT-4o', 'Pollinations-DeepSeek', 'Pollinations-DeepSeek-V3', 'Pollinations-GPT-5', 'Pollinations-Grok', 'Pollinations-Grok-3', 'Pollinations-Haiku', 'Pollinations-Llama-3.3', 'Pollinations-Llamascout', 'Pollinations-Qwen-2.5', 'Pollinations-Qwen3', 'Pollinations-SearchGPT', 'Pollinations-Sur', 'SambaNova', 'Together', 'Together-Llama3.3-70B-Free', 'Together-Qwen', 'Together-Qwen2.5-72B', 'ZAI-GLM-4.5-Flash', 'ZAI-GLM-4.6V-Flash', 'ZeroGPU-Coder-1', 'ZeroGPU-Coder-2', 'v1']
+## Cost per Active User
+
+### Compute, Storage, Bandwidth Costs (USD)
+- **Compute:** $0.02/hour (assuming t2.micro instances for development purposes)
+- **Storage:** $0.023/GB/month (standard S3 storage)
+- **Bandwidth:** $0.09/GB (data transfer out)
+
+Assuming an average usage scenario:
+- **Compute:** 730 hours/month (24x7 operation) → $14.60/month
+- **Storage:** 10 GB/month → $0.23/month
+- **Bandwidth:** 50 GB/month → $4.50/month
+
+**Total Cost per Active User:** $19.33/month
+
+## Pricing Tiers
+
+### Tier 1: Basic ($29/user/mo)
+- Features: Single-user sandbox, basic AWS service access, limited compute resources
+
+### Tier 2: Team ($49/user/mo)
+- Features: Multi-user collaboration, shared IaC environments, GitLab integration, increased compute/storage limits
+
+### Tier 3: Enterprise ($99/user/mo)
+- Features: All Team tier features plus advanced monitoring, priority support, unlimited compute/storage resources
+
+## Customer Acquisition Cost (CAC) Range
+- **Low End:** $50/user (organic growth, community referrals)
+- **High End:** $150/user (paid advertising, targeted marketing campaigns)
+
+## Lifetime Value (LTV) Estimate
+- **Average Retention Period:** 12 months
+- **Tier Distribution:** 40% Basic, 40% Team, 20% Enterprise
+
+**LTV Calculation:**
+- **Basic:** $29/user/mo * 12 months = $348/user
+- **Team:** $49/user/mo * 12 months = $588/user
+- **Enterprise:** $99/user/mo * 12 months = $1,188/user
+
+**Weighted Average LTV:** (0.4 * $348) + (0.4 * $588) + (0.2 * $1,188) = $580.80/user
+
+## Break-even Users Count
+- **Average Revenue per User (ARPU):** $48.32/user/mo ((0.4 * $29) + (0.4 * $49) + (0.2 * $99))
+- **Average Cost per User:** $19.33/user/mo
+- **Contribution Margin per User:** $48.32 - $19.33 = $28.99/user/mo
+
+**Break-even Users Count:** Fixed Costs / Contribution Margin per User
+- Assuming fixed costs of $5,000/month (server maintenance, marketing, etc.)
+- **Break-even Users:** $5,000 / $28.99 ≈ 173 users
+
+## Path to $10K MRR
+- **Target MRR:** $10,000/month
+- **Required Users:** $10,000 / $48.32 ≈ 207 users
+
+**Distribution Across Tiers:**
+- **Basic:** 83 users (40% of 207)
+- **Team:** 83 users (40% of 207)
+- **Enterprise:** 41 users (20% of 207)
+
+**Verification:**
+- **Basic Contribution:** 83 users * $29/user/mo = $2,407
+- **Team Contribution:** 83 users * $49/user/mo = $4,067
+- **Enterprise Contribution:** 41 users * $99/user/mo = $4,059
+
+**Total MRR:** $2,407 + $4,067 + $4,059 = $10,533
+
+```
