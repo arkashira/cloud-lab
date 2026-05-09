@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: axentx
+  description: Install and configure Docker CE
+  company: axentx
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+  - name: Amazon
+    versions:
+    - 2
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  galaxy_tags:
+  - docker
+  - ce
+  - amazon
+  - ubuntu
+  - debian

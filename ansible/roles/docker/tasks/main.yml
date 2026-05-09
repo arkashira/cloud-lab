@@ -1,0 +1,17 @@
+---
+- name: Install Docker CE
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add Docker user to docker group
+  user:
+    name: docker
+    group: docker
+    append: yes
