@@ -1,22 +1,28 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Resources": {
-    "EC2Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "ImageId": "ami-0c94855ba95c71c99",
-        "InstanceType": "t2.micro"
-      }
-    },
     "SecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Allow inbound traffic on port 22",
+        "GroupDescription": "Security group for pre-configured EC2 instances",
+        "VpcId": "your-vpc-id",
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
             "FromPort": 22,
             "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
             "CidrIp": "0.0.0.0/0"
           }
         ]
@@ -25,8 +31,42 @@
     "ElasticIP": {
       "Type": "AWS::EC2::EIP",
       "Properties": {
-        "Domain": "vpc",
-        "InstanceId": { "Ref": "EC2Instance" }
+        "Domain": "vpc"
+      }
+    },
+    "Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": "your-ami-id",
+        "SecurityGroupIds": [
+          {
+            "Ref": "SecurityGroup"
+          }
+        ],
+        "EbsOptimized": true,
+        "InstanceType": "t2.micro",
+        "KeyName": "your-key-pair-name",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": 8,
+              "DeleteOnTermination": true
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": |
+              #!/bin/bash
+              # Install Elastic IP
+              yum install -y amazon-ec2-instance-metadata-tools
+              yum install -y iputils
+              # Associate Elastic IP
+              curl -s http://169.254.169.254/latest/meta-data/public-ipv4 | sudo tee /etc/sysconfig/network-scripts/ifcfg-eth0:0 > /dev/null
+              sudo service network restart
+            }
+          }
       }
     }
   }
