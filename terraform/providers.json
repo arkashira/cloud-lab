@@ -1,6 +1,11 @@
 {
-  "need_clarification": true,
-  "reason": "The task mentions a likely file path '/opt/axentx/cloud-lab/terraform/providers.json' but does not specify the exact content or structure needed for the Terraform provider configuration. Also, there's no indication of which Terraform providers should be configured or what their settings should be.",
-  "request_to": "prd-daemon",
-  "minimal_spec_needed": "Provide the exact content and structure for the terraform/providers.json file including which providers to configure and their required settings."
+  "providers": [
+    {
+      "name": "aws",
+      "version": "5.0",
+      "config": {
+        "region": "us-east-1"
+      }
+    }
+  ]
 }
