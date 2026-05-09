@@ -1,0 +1,70 @@
+---
+- name: Deploy Sample Web Application
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars:
+    docker_image: "nginx:alpine"
+    container_name: "sample-web-app"
+    port: "8080"
+    host_port: "8080"
+    exposed_port: "80"
+
+  tasks:
+    - name: Ensure Docker is installed
+      ansible.builtin.import_role:
+        name: docker_install
+      tags:
+        - docker
+        - install
+
+    - name: Pull Docker image
+      community.docker.docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+        pull_policy: always
+      register: pull_result
+      ignore_errors: yes
+      tags:
+        - docker
+        - pull
+
+    - name: Remove existing container if present
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+      tags:
+        - docker
+        - cleanup
+
+    - name: Create and start sample web application container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image }}"
+        state: started
+        ports:
+          - "{{ host_port }}:{{ exposed_port }}"
+        restart_policy: always
+        publish_all_ports: no
+      register: container_result
+      tags:
+        - docker
+        - deploy
+
+    - name: Verify container is running
+      ansible.builtin.wait_for:
+        port: "{{ host_port }}"
+        timeout: 30
+        delay: 5
+      when: container_result is defined
+      tags:
+        - docker
+        - verify
+
+    - name: Display container status
+      ansible.builtin.debug:
+        msg: "Sample web application is running on port {{ host_port }}"
+      when: container_result is defined
+      tags:
+        - docker
+        - info

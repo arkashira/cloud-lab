@@ -1,0 +1,73 @@
+---
+- name: Install CloudWatch Agent
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Install prerequisites
+      ansible.builtin.yum:
+        name:
+          - wget
+          - unzip
+        state: present
+      when: ansible_os_family == "RedHat"
+      tags:
+        - cloudwatch
+        - prerequisites
+
+    - name: Download CloudWatch Agent
+      ansible.builtin.get_url:
+        url: "https://s3.amazonaws.com/amazoncloudwatch-agent/linux/amd64/1.0/cloudwatch-agent.rpm"
+        dest: "/tmp/cloudwatch-agent.rpm"
+        mode: "0644"
+      tags:
+        - cloudwatch
+        - download
+
+    - name: Install CloudWatch Agent
+      ansible.builtin.yum:
+        name: "/tmp/cloudwatch-agent.rpm"
+        state: present
+      tags:
+        - cloudwatch
+        - install
+
+    - name: Configure CloudWatch Agent
+      ansible.builtin.template:
+        src: "templates/cloudwatch-agent.conf.j2"
+        dest: "/etc/aws/amazon-cloudwatch-agent/amazon-cloudwatch-agent.json"
+        owner: root
+        group: root
+        mode: "0600"
+      notify: Restart CloudWatch Agent
+      tags:
+        - cloudwatch
+        - config
+
+    - name: Enable and start CloudWatch Agent
+      ansible.builtin.systemd:
+        name: amazon-cloudwatch-agent
+        enabled: yes
+        state: started
+      tags:
+        - cloudwatch
+        - service
+
+    - name: Verify CloudWatch Agent is running
+      ansible.builtin.wait_for:
+        port: 5678
+        timeout: 30
+        delay: 5
+      tags:
+        - cloudwatch
+        - verify
+
+  handlers:
+    - name: Restart CloudWatch Agent
+      ansible.builtin.systemd:
+        name: amazon-cloudwatch-agent
+        state: restarted
+      tags:
+        - cloudwatch
+        - restart

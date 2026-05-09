@@ -1,0 +1,87 @@
+---
+- name: Install Docker CE on Amazon Linux 2
+  hosts: all
+  become: yes
+  gather_facts: yes
+  vars:
+    docker_version: "24.0.7"
+
+  tasks:
+    - name: Install prerequisites
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+      when: ansible_os_family == "Debian"
+      tags:
+        - docker
+        - prerequisites
+
+    - name: Install prerequisites for Amazon Linux
+      ansible.builtin.yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+      when: ansible_os_family == "RedHat"
+      tags:
+        - docker
+        - prerequisites
+
+    - name: Add Docker GPG key
+      ansible.builtin.get_url:
+        url: "https://download.docker.com/linux/amazon/gpg"
+        dest: "/etc/pki/rpm-gpg/RPM-GPG-KEY-docker"
+        mode: "0644"
+      when: ansible_os_family == "RedHat"
+      tags:
+        - docker
+        - key
+
+    - name: Add Docker repository
+      ansible.builtin.yum_repository:
+        name: docker-ce
+        description: Docker CE repository
+        baseurl: "https://download.docker.com/linux/amazon/{{ ansible_distribution_major_version }}/stable/x86_64"
+        gpgcheck: yes
+        gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-docker"
+        enabled: yes
+      when: ansible_os_family == "RedHat"
+      tags:
+        - docker
+        - repo
+
+    - name: Install Docker CE
+      ansible.builtin.yum:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+      when: ansible_os_family == "RedHat"
+      tags:
+        - docker
+        - install
+
+    - name: Enable and start Docker service
+      ansible.builtin.systemd:
+        name: docker
+        enabled: yes
+        state: started
+      when: ansible_os_family == "RedHat"
+      tags:
+        - docker
+        - service
+
+    - name: Verify Docker installation
+      ansible.builtin.command: docker --version
+      register: docker_version_check
+      changed_when: false
+      tags:
+        - docker
+        - verify
