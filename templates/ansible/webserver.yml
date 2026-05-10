@@ -1,0 +1,30 @@
+---
+- name: Deploy and configure web server
+  hosts: webservers
+  become: yes
+  vars:
+    http_port: 80
+    max_workers: 4
+  roles:
+    - webserver
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+        enabled: yes
+    - name: reload apache
+      service:
+        name: apache2
+        state: reloaded
+  post_tasks:
+    - name: Validate service is running and responsive
+      uri:
+        url: "http://localhost:{{ http_port }}"
+        timeout: 10
+        validate_certs: no
+      register: health_check
+      until: health_check.status == 200
+      retries: 6
+      delay: 5
+      failed_when: health_check.status != 200

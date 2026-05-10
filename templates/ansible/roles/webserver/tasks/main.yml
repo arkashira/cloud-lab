@@ -1,40 +1,40 @@
 ---
-- name: Install Nginx
+- name: Update apt cache
   apt:
-    name: nginx
-    state: present
-  when: ansible_os_family == 'Debian'
+    update_cache: yes
+    cache_valid_time: 3600
 
-- name: Start and enable Nginx
+- name: Install Apache web server
+  apt:
+    name: apache2
+    state: present
+
+- name: Ensure Apache is running and enabled
   service:
-    name: nginx
+    name: apache2
     state: started
     enabled: yes
 
-- name: Deploy default Nginx config
+- name: Configure Apache port
+  lineinfile:
+    path: /etc/apache2/ports.conf
+    regexp: '^Listen '
+    line: "Listen {{ http_port }}"
+    notify: restart apache
+
+- name: Set ServerName in Apache config
+  lineinfile:
+    path: /etc/apache2/apache2.conf
+    regexp: '^ServerName'
+    line: "ServerName localhost"
+    insertafter: EOF
+    notify: reload apache
+
+- name: Deploy default index.html
   template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-  notify: restart nginx
-
-- name: Ensure web root exists
-  file:
-    path: /var/www/html
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-
-- name: Deploy index.html
-  copy:
-    content: |
-      <!DOCTYPE html>
-      <html>
-      <head><title>Cloud Lab</title></head>
-      <body><h1>🚀 Welcome to Cloud Lab</h1></body>
-      </html>
+    src: index.html.j2
     dest: /var/www/html/index.html
     owner: www-data
     group: www-data
     mode: '0644'
-  notify: reload nginx
+  notify: reload apache
