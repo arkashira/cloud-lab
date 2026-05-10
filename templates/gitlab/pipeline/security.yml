@@ -1,0 +1,12 @@
+stages:
+  - security
+
+security_scan:
+  stage: security
+  image: aquasec/trivy:latest
+  script:
+    - trivy fs --exit-code 1 --severity CRITICAL .
+  artifacts:
+    reports:
+      junit: trivy-report.xml
+  allow_failure: false

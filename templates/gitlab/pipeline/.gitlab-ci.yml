@@ -1,0 +1,31 @@
+include:
+  - local: '/opt/axentx/cloud-lab/templates/gitlab/pipeline/security.yml'
+
+stages:
+  - build
+  - test
+  - security
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - echo "Building application..."
+  artifacts:
+    paths:
+      - dist/
+
+test_job:
+  stage: test
+  script:
+    - echo "Running tests..."
+  dependencies:
+    - build_job
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying application..."
+  environment: production
+  only:
+    - main
