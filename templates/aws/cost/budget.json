@@ -1,0 +1,35 @@
+{
+  "budget": {
+    "name": "axentx-monthly-spend-budget",
+    "budget_type": "COST",
+    "time_unit": "MONTHLY",
+    "budget_limit": {
+      "amount": 50.00,
+      "unit": "USD"
+    },
+    "cost_filters": {
+      "tag_key": "Environment",
+      "tag_values": ["production"]
+    },
+    "budget_actions": [
+      {
+        "action_type": "EMAIL",
+        "threshold": 80,
+        "notification": {
+          "email_addresses": ["admin@axentx.com"],
+          "subject": "AWS Budget Alert: 80% Threshold",
+          "message": "Your AWS spending has reached 80% of your monthly budget."
+        }
+      },
+      {
+        "action_type": "EMAIL",
+        "threshold": 100,
+        "notification": {
+          "email_addresses": ["admin@axentx.com"],
+          "subject": "AWS Budget Alert: 100% Threshold",
+          "message": "Your AWS spending has exceeded your monthly budget."
+        }
+      }
+    ]
+  }
+}
