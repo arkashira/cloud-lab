@@ -1,0 +1,10 @@
+---
+- name: Create a file
+  hosts: all
+  become: yes
+  tasks:
+    - name: Create hello file
+      copy:
+        content: "Hello, World!"
+        dest: /tmp/hello.txt
+        mode: '0644'
