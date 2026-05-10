@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  gitlab:
+    image: gitlab-ce:latest
+    container_name: gitlab
+    restart: unless-stopped
+    hostname: ${GITLAB_HOSTNAME}
+    environment:
+      # Configure external URL, artifact retention, root password, and shared runners
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://${GITLAB_HOSTNAME}'
+        gitlab_rails['gitlab_ci']['default_artifacts_expire_in'] = '48h'
+        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD}'
+        gitlab_rails['gitlab_ci']['shared_runners_enabled'] = true
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS (optional, requires certs)
+      - "22:22"      # SSH for Git over SSH
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    restart: always
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: gitlab
+      POSTGRES_USER: gitlab
+      POSTGRES_PASSWORD: gitlab
+    restart: always
+
+  runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: unless-stopped
+    depends_on:
+      - gitlab
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - runner-config:/etc/gitlab-runner
+    environment:
+      # These vars are used by the registration command below
+      CI_SERVER_URL: http://${GITLAB_HOSTNAME}
+      REGISTRATION_TOKEN: ${GITLAB_REGISTRATION_TOKEN}
+      RUNNER_EXECUTOR: docker
+      RUNNER_DOCKER_IMAGE: alpine:latest
+      RUNNER_TAG_LIST: shared
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      # Register the runner if not already registered
+      if [ ! -f /etc/gitlab-runner/config.toml ]; then
+        gitlab-runner register \
+          --non-interactive \
+          --url "http://${GITLAB_HOSTNAME}" \
+          --registration-token "${GITLAB_REGISTRATION_TOKEN}" \
+          --executor "${RUNNER_EXECUTOR}" \
+          --docker-image "${RUNNER_DOCKER_IMAGE}" \
+          --description "shared-runner" \
+          --tag-list "${RUNNER_TAG_LIST}" \
+          --run-untagged="true" \
+          --locked="false"
+      fi
+      # Start the runner
+      exec gitlab-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
+  redis_data:
+  postgres_data:
+  runner-config:
