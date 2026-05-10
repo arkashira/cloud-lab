@@ -1,0 +1,15 @@
+{
+    "83730": {
+        "code": "ACCOUNT_CREATION_FAILED",
+        "description": "Failed to create AWS account"
+    },
+    "83731": {
+        "code": "INVALID_CREDENTIALS",
+        "description": "Invalid AWS credentials"
+    },
+    "83732": {
+        "code": "NETWORK_ERROR",
+        "description": "Network error occurred during AWS account creation"
+    }
+    // Add more error codes as needed
+}
