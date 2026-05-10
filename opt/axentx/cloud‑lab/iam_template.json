@@ -1,0 +1,102 @@
+{
+  "Version": "2023-10-01",
+  "Roles": [
+    {
+      "Name": "ReadOnlyRole",
+      "AssumeRolePolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": { "AWS": "*" },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      },
+      "ManagedPolicyArns": [
+        "arn:aws:iam::aws:policy/ReadOnlyAccess"
+      ]
+    },
+    {
+      "Name": "AdminRole",
+      "AssumeRolePolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Principal": { "AWS": "*" },
+            "Action": "sts:AssumeRole"
+          }
+        ]
+      },
+      "ManagedPolicyArns": [
+        "arn:aws:iam::aws:policy/AdministratorAccess"
+      ]
+    }
+  ],
+
+  "Policies": [
+    {
+      "Name": "S3ReadWritePolicy",
+      "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "s3:GetObject",
+              "s3:PutObject",
+              "s3:DeleteObject",
+              "s3:ListBucket"
+            ],
+            "Resource": [
+              "arn:aws:s3:::example-bucket",
+              "arn:aws:s3:::example-bucket/*"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "Name": "EC2ManagementPolicy",
+      "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:StartInstances",
+              "ec2:StopInstances",
+              "ec2:TerminateInstances",
+              "ec2:DescribeInstances"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    }
+  ],
+
+  "Groups": [
+    {
+      "Name": "Developers",
+      "AttachedPolicyNames": [
+        "S3ReadWritePolicy",
+        "EC2ManagementPolicy"
+      ],
+      "Users": [
+        "alice@example.com",
+        "bob@example.com"
+      ]
+    },
+    {
+      "Name": "Auditors",
+      "AttachedPolicyNames": [
+        "ReadOnlyRole"
+      ],
+      "Users": [
+        "carol@example.com"
+      ]
+    }
+  ]
+}
