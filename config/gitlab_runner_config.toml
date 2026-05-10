@@ -1,0 +1,15 @@
+# Default configuration for the GitLab Runner in the sandbox.
+# This file is used by the gitlab-runner binary when started.
+concurrent = 1
+check_interval = 0
+
+[[runners]]
+  name = "sandbox-runner"
+  url = "https://gitlab.example.com"
+  token = "PLACEHOLDER_TOKEN"
+  executor = "shell"
+  [runners.custom_build_dir]
+  [runners.cache]
+    Type = "s3"
+    Path = "cache"
+    Shared = true
