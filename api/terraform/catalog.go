@@ -3,70 +3,59 @@ package terraform
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/hashicorp/terraform-registry-client-go/terraform"
 )
 
-// Module describes a pre‑built Terraform module that can be launched in a sandbox.
 type Module struct {
-	// Name is a short identifier (e.g., "vpc", "eks", "rds").
-	Name string `json:"name"`
-	// Description is a human‑readable summary of what the module provisions.
-	Description string `json:"description"`
-	// Version is the module version that the catalog advertises.
-	Version string `json:"version,omitempty"`
-	// Source is the Terraform Registry or VCS URL where the module lives.
-	Source string `json:"source"`
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Source      string   `json:"source"`
+	Versions    []string `json:"versions"`
 }
 
-/*
-   In a real product the catalog would be loaded from a database,
-   a configuration file, or a remote service.  For the purpose of the
-   lab we keep a static slice – it is simple, deterministic and easy
-   to test.
-*/
-var catalog = []Module{
-	{
-		Name:        "vpc",
-		Description: "Creates a Virtual Private Cloud with public and private subnets",
-		Version:     "1.0.0",
-		Source:      "terraform-aws-modules/vpc/aws",
-	},
-	{
-		Name:        "eks",
-		Description: "Creates an Amazon EKS cluster with worker nodes",
-		Version:     "1.0.0",
-		Source:      "terraform-aws-modules/eks/aws",
-	},
-	{
-		Name:        "rds",
-		Description: "Creates an Amazon RDS database instance (PostgreSQL)",
-		Version:     "1.0.0",
-		Source:      "terraform-aws-modules/rds/aws",
-	},
-}
-
-// GetModules returns a **copy** of the catalog so callers cannot mutate the
-// internal slice.
-func GetModules() []Module {
-	out := make([]Module, len(catalog))
-	copy(out, catalog)
-	return out
-}
-
-// CatalogHandler writes the module catalog as JSON.
-// It is intended to be mounted under /api/terraform/catalog.
-func CatalogHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		// Explicitly reject non‑GET methods – the API is read‑only.
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+func (h *Handler) GetTerraformModules(c *gin.Context) {
+	modules, err := terraform.ListModules()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	modules := GetModules()
+	moduleList := make([]Module, len(modules))
+	for i, module := range modules {
+		moduleVersions := make([]string, len(module.Versions))
+		for j, version := range module.Versions {
+			moduleVersions[j] = version.Version
+		}
+		moduleList[i] = Module{
+			ID:          module.Name.String(),
+			Name:        module.Name.String(),
+			Description: module.Description.String(),
+			Source:      module.URL.String(),
+			Versions:    moduleVersions,
+		}
+	}
 
-	w.Header().Set("Content-Type", "application/json")
-	enc := json.NewEncoder(w)
-	if err := enc.Encode(modules); err != nil {
-		// If encoding fails we cannot recover – return a generic 500.
-		http.Error(w, "failed to encode catalog", http.StatusInternalServerError)
+	c.JSON(http.StatusOK, gin.H{"modules": moduleList})
+}
+
+func (h *Handler) GetTerraformModule(c *gin.Context) {
+	name := c.Param("name")
+	version := c.Query("version")
+
+	// TODO: Implement getting a specific module version
+	c.JSON(http.StatusNotFound, gin.H{"error": "Module not found"})
+}
+
+// RegisterRoutes registers the Terraform catalog endpoint with the supplied mux.
+// The caller can pass the default http.DefaultServeMux or any compatible mux.
+func RegisterRoutes(mux http.Handler) {
+	// Attempt to cast to *http.ServeMux to add a handler; if not possible, fall back to default.
+	if serveMux, ok := mux.(*http.ServeMux); ok {
+		serveMux.HandleFunc("/api/terraform/catalog", h.GetTerraformModules)
+		serveMux.HandleFunc("/api/terraform/module/{name}", h.GetTerraformModule)
 	}
 }
