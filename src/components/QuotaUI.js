@@ -1,47 +1,75 @@
 import React, { useState } from 'react';
 
-const QuotaUI = () => {
-  const [formData, setFormData] = useState({ name: '', value: '' });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const QuotaUI = ({ workspaceId }) => {
+  const [name, setName] = useState('');
+  const [value, setValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // Fixed: Use different variable names to avoid shadowing
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name: inputName, value: inputValue } = event.target;
+    
+    if (inputName === 'name') {
+      setName(inputValue);
+    } else if (inputName === 'value') {
+      setValue(inputValue);
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    
+    setIsLoading(true);
+    setError(null);
+
     try {
-      // Add your API call here
-      console.log('Submitting quota update:', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-    } catch (error) {
-      console.error('Failed to update quota:', error);
+      const response = await fetch(`/api/${workspaceId}/quota`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, value: parseInt(value, 10) },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update quota');
+      }
+
+      const result = await response.json();
+      console.log('Quota updated:', result);
+      
+      // Reset form after successful update
+      setName('');
+      setValue('');
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
-        type="text" 
-        name="name" 
-        value={formData.name} 
-        onChange={handleChange} 
-        disabled={isSubmitting}
-      />
-      <input 
-        type="number" 
-        name="value" 
-        value={formData.value} 
+      {error && <div className="error">{error}</div>}
+      
+      <input
+        type="text"
+        name="name"
+        value={name}
         onChange={handleChange}
-        disabled={isSubmitting}
+        placeholder="Quota name"
+        disabled={isLoading}
       />
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Updating...' : 'Update Quota'}
+      
+      <input
+        type="number"
+        name="value"
+        value={value}
+        onChange={handleChange}
+        placeholder="Quota value"
+        disabled={isLoading}
+      />
+      
+      <button type="submit" disabled={isLoading || !name || !value}>
+        {isLoading ? 'Updating...' : 'Update Quota'}
       </button>
     </form>
   );
