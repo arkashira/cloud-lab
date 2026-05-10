@@ -1,123 +1,47 @@
 provider "aws" {
-  region = var.aws_region
+  region = var.region
 }
 
-resource "aws_vpc" "sandbox_vpc" {
-  cidr_block = var.vpc_cidr
-
+resource "aws_vpc" "sandbox" {
+  cidr_block           = var.vpc_cidr_block
+  enable_dns_support   = true
+  enable_dns_hostnames = true
   tags = merge(
-    {
-      Name = "${var.environment_name}-vpc"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-      Sandbox     = "true"
-    },
-    var.additional_tags
+    { Name = var.name },
+    { Environment = var.environment },
   )
 }
 
-resource "aws_internet_gateway" "sandbox_igw" {
-  vpc_id = aws_vpc.sandbox_vpc.id
-
+resource "aws_subnet" "public" {
+  count             = length(var.public_subnets_cidr_blocks)
+  vpc_id            = aws_vpc.sandbox.id
+  cidr_block        = element(var.public_subnets_cidr_blocks, count.index)
+  availability_zone = element(var.availability_zones, count.index)
   tags = merge(
-    {
-      Name = "${var.environment_name}-igw"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-    },
-    var.additional_tags
+    { Name = "${var.name}-public-${count.index + 1}" },
+    { Environment = var.environment },
   )
 }
 
-resource "aws_subnet" "private_subnets" {
-  count = length(var.private_subnets_cidr)
-
-  vpc_id            = aws_vpc.sandbox_vpc.id
-  cidr_block        = var.private_subnets_cidr[count.index]
-  availability_zone = var.availability_zones[count.index % length(var.availability_zones)]
-
+resource "aws_subnet" "private" {
+  count             = length(var.private_subnets_cidr_blocks)
+  vpc_id            = aws_vpc.sandbox.id
+  cidr_block        = element(var.private_subnets_cidr_blocks, count.index)
+  availability_zone = element(var.availability_zones, count.index)
   tags = merge(
-    {
-      Name        = "${var.environment_name}-private-subnet-${count.index}"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-      SubnetType  = "Private"
-    },
-    var.additional_tags
+    { Name = "${var.name}-private-${count.index + 1}" },
+    { Environment = var.environment },
   )
 }
 
-resource "aws_subnet" "public_subnets" {
-  count = length(var.public_subnets_cidr)
-
-  vpc_id            = aws_vpc.sandbox_vpc.id
-  cidr_block        = var.public_subnets_cidr[count.index]
-  availability_zone = var.availability_zones[count.index % length(var.availability_zones)]
-  map_public_ip_on_launch = true
-
-  tags = merge(
-    {
-      Name        = "${var.environment_name}-public-subnet-${count.index}"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-      SubnetType  = "Public"
-    },
-    var.additional_tags
-  )
-}
-
-resource "aws_route_table" "public_route_table" {
-  vpc_id = aws_vpc.sandbox_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.sandbox_igw.id
-  }
-
-  tags = merge(
-    {
-      Name        = "${var.environment_name}-public-rt"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-    },
-    var.additional_tags
-  )
-}
-
-resource "aws_route_table_association" "public_subnet_associations" {
-  count          = length(aws_subnet.public_subnets)
-  subnet_id      = aws_subnet.public_subnets[count.index].id
-  route_table_id = aws_route_table.public_route_table.id
-}
-
-resource "aws_security_group" "sandbox_sg" {
-  name        = "${var.environment_name}-sandbox-sg"
-  description = "Security group for sandbox instances"
-  vpc_id      = aws_vpc.sandbox_vpc.id
+resource "aws_security_group" "allow_all" {
+  name_prefix = "${var.name}-sg-"
+  vpc_id      = aws_vpc.sandbox.id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -129,12 +53,7 @@ resource "aws_security_group" "sandbox_sg" {
   }
 
   tags = merge(
-    {
-      Name        = "${var.environment_name}-security-group"
-      Environment = var.environment_name
-      ManagedBy   = "Terraform"
-      Project     = "cloud-lab"
-    },
-    var.additional_tags
+    { Name = "${var.name}-sg" },
+    { Environment = var.environment },
   )
 }
