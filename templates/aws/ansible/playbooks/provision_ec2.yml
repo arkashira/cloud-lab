@@ -1,0 +1,59 @@
+---
+- name: Provision EC2 instances
+  hosts: localhost
+  gather_facts: false
+  vars:
+    region: us-west-2
+    instance_type: t2.micro
+    ami: ami-0c55b159cbfafe1f0
+    key_name: my-key-pair
+    security_group: my-security-group
+    web_instance_count: 1
+    app_instance_count: 1
+  tasks:
+    - name: Create security group
+      ec2_group:
+        name: "{{ security_group }}"
+        description: "Security group for web and app servers"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+          - proto: tcp
+            from_port: 80
+            to_port: 80
+            cidr_ip: 0.0.0.0/0
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0
+      register: security_group_result
+
+    - name: Launch web instances
+      ec2:
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        group_id: "{{ security_group_result.group_id }}"
+        count: "{{ web_instance_count }}"
+        instance_tags:
+          Name: web-server
+      register: web_instances
+
+    - name: Launch app instances
+      ec2:
+        region: "{{ region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image: "{{ ami }}"
+        group_id: "{{ security_group_result.group_id }}"
+        count: "{{ app_instance_count }}"
+        instance_tags:
+          Name: app-server
+      register: app_instances
+
+    - name: Display instance IDs
+      debug:
+        msg: "Web instance IDs: {{ web_instances.instance_ids }}, App instance IDs: {{ app_instances.instance_ids }}"

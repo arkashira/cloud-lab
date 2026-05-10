@@ -1,0 +1,17 @@
+---
+- name: Ensure EC2 instances are running
+  ec2:
+    region: "{{ region }}"
+    instance_ids: "{{ item }}"
+    state: running
+  loop: "{{ ec2_instance_ids }}"
+  when: ec2_instance_ids is defined
+
+- name: Wait for SSH to be available
+  wait_for:
+    host: "{{ item.public_dns_name }}"
+    port: 22
+    delay: 10
+    timeout: 300
+  loop: "{{ ec2_instances }}"
+  when: ec2_instances is defined
