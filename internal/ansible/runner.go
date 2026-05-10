@@ -3,14 +3,11 @@ package ansible
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -59,7 +56,7 @@ func (r *Runner) ValidateHosts(hosts []string, vpcCIDR string) error {
 // Run executes the given playbook against the specified hosts.
 // The output of the playbook is streamed to the provided writer in real time.
 // A Result summary is returned once the playbook finishes.
-func (r *Runner) Run(playbookPath string, hosts []string, vpcCIDR string, output io.Writer, logFile *os.File) (Result, error) {
+func (r *Runner) Run(playbookPath string, hosts []string, vpcCIDR string, output io.Writer) (Result, error) {
 	var res Result
 
 	// 1. Validate hosts against VPC
@@ -93,10 +90,7 @@ func (r *Runner) Run(playbookPath string, hosts []string, vpcCIDR string, output
 		playbookPath,
 		"--diff", // show changes
 		"--connection", "ssh",
-		"--ssh-common-args",
-			"-o StrictHostKeyChecking=no",
-			"-o UserKnownHostsFile=/dev/null",
-			fmt.Sprintf("-o LogLevel=DEBUG -o LogFile=%s", logFile.Name()),
+		"--ssh-common-args", "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null",
 	)
 
 	// 4. Capture stdout and stderr
@@ -125,28 +119,36 @@ func (r *Runner) Run(playbookPath string, hosts []string, vpcCIDR string, output
 		}
 	}()
 
-	// 7. Wait with timeout and collect results
+	// 7. Wait with timeout
 	done := make(chan error, 1)
 	go func() {
-		select {
-		case <-cmd.Process.Signal(syscall.SIGTERM):
-			cmd.Process.Kill()
-			done <- fmt.Errorf("ansible run timed out")
-		case err := cmd.Wait():
-			done <- err
-		}
+		done <- cmd.Wait()
 	}()
 
-	// 8. Gather results from the command's exit status
-	if err := <-done; err != nil {
-		// Parse the exit status to get the number of changes, OKs, and failures
-		exitCode := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-		res.Changed = (exitCode & 1) != 0
-		res.OK = (exitCode & 2) != 0
-		res.Failed = (exitCode & 4) != 0
-		return res, err
+	select {
+	case err := <-done:
+		if err != nil {
+			return res, fmt.Errorf("ansible failed: %w", err)
+		}
+	case <-time.After(r.Timeout):
+		return res, fmt.Errorf("ansible timed out after %v", r.Timeout)
 	}
 
-	// 9. If the playbook did not time out, return the results
+	// 8. Parse result from output buffer (simplified parsing logic)
+	// In practice, you'd parse the JSON or YAML output from Ansible for accurate counts.
+	// For now, we simulate counting based on presence of keywords like "changed", "ok", etc.
+	lines := strings.Split(strings.TrimSpace(outBuf.String()), "\n")
+	for _, line := range lines {
+		if strings.Contains(line, "changed=") {
+			res.Changed++
+		}
+		if strings.Contains(line, "ok=") {
+			res.OK++
+		}
+		if strings.Contains(line, "failed=") {
+			res.Failed++
+		}
+	}
+
 	return res, nil
 }
