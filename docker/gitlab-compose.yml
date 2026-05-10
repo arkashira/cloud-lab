@@ -2,82 +2,51 @@ version: '3.8'
 
 services:
   gitlab:
-    image: gitlab-ce:latest
-    container_name: gitlab
-    restart: unless-stopped
-    hostname: ${GITLAB_HOSTNAME}
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab-sandbox
+    restart: always
+    hostname: '${GITLAB_HOSTNAME:-gitlab.local}'
+    # Add shm_size for Sidekiq (critical for CI/CD)
+    shm_size: '256m'
+    # Add resource limits for stability
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     environment:
-      # Configure external URL, artifact retention, root password, and shared runners
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://${GITLAB_HOSTNAME}'
-        gitlab_rails['gitlab_ci']['default_artifacts_expire_in'] = '48h'
-        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD}'
-        gitlab_rails['gitlab_ci']['shared_runners_enabled'] = true
+        external_url "http://${GITLAB_HOSTNAME:-gitlab.local}:${GITLAB_PORT:-80}"
+        gitlab_rails['gitlab_shell_ssh_port'] = ${GITLAB_SSH_PORT:-22}
+        gitlab_rails['time_zone'] = 'UTC'
+        gitlab_rails['backup_keep_time'] = 172800
+        # Artifact retention policy (48 hours)
+        gitlab_rails['artifacts_expiration_policy'] = { 'keep_n': 30, 'older_than': '48h', 'enabled': true }
+        nginx['enable'] = true
+        nginx['client_max_body_size'] = '256m'
+        logging['level'] = 'info'
+        # Disable HTTPS if not configured (fixes port 443 binding issue)
+        nginx['redirect_http_to_https'] = false
     ports:
-      - "80:80"      # HTTP
-      - "443:443"    # HTTPS (optional, requires certs)
-      - "22:22"      # SSH for Git over SSH
+      - "${GITLAB_PORT:-80}:80"
+      - "${GITLAB_SSH_PORT:-22}:22"
+      # Commented out - enable only if HTTPS is properly configured
+      # - "${GITLAB_HTTPS_PORT:-443}:443"
     volumes:
-      - gitlab-config:/etc/gitlab
-      - gitlab-logs:/var/log/gitlab
-      - gitlab-data:/var/opt/gitlab
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
+      - './gitlab/data:/var/opt/gitlab'
+    networks:
+      - gitlab-network
+    healthcheck:
+      # Use wget instead of curl (more reliably available)
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s  # GitLab takes time to start
 
-  redis:
-    image: redis:alpine
-    container_name: redis
-    volumes:
-      - redis_data:/data
-    restart: always
-
-  postgres:
-    image: postgres:alpine
-    container_name: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: gitlab
-      POSTGRES_USER: gitlab
-      POSTGRES_PASSWORD: gitlab
-    restart: always
-
-  runner:
-    image: gitlab/gitlab-runner:latest
-    container_name: gitlab-runner
-    restart: unless-stopped
-    depends_on:
-      - gitlab
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - runner-config:/etc/gitlab-runner
-    environment:
-      # These vars are used by the registration command below
-      CI_SERVER_URL: http://${GITLAB_HOSTNAME}
-      REGISTRATION_TOKEN: ${GITLAB_REGISTRATION_TOKEN}
-      RUNNER_EXECUTOR: docker
-      RUNNER_DOCKER_IMAGE: alpine:latest
-      RUNNER_TAG_LIST: shared
-    entrypoint: ["/bin/sh", "-c"]
-    command: |
-      # Register the runner if not already registered
-      if [ ! -f /etc/gitlab-runner/config.toml ]; then
-        gitlab-runner register \
-          --non-interactive \
-          --url "http://${GITLAB_HOSTNAME}" \
-          --registration-token "${GITLAB_REGISTRATION_TOKEN}" \
-          --executor "${RUNNER_EXECUTOR}" \
-          --docker-image "${RUNNER_DOCKER_IMAGE}" \
-          --description "shared-runner" \
-          --tag-list "${RUNNER_TAG_LIST}" \
-          --run-untagged="true" \
-          --locked="false"
-      fi
-      # Start the runner
-      exec gitlab-runner run --user=gitlab-runner --working-directory=/home/gitlab-runner
-
-volumes:
-  gitlab-config:
-  gitlab-logs:
-  gitlab-data:
-  redis_data:
-  postgres_data:
-  runner-config:
+networks:
+  gitlab-network:
+    driver: bridge
