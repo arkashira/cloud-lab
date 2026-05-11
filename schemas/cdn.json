@@ -1,12 +1,19 @@
-# Create a new distribution
-dist = Distribution(custom_domain="example.com")
-dist.save()
-
-# List all distributions
-all_dists = Distribution.list_all()
-for d in all_dists:
-    print(d.id, d.custom_domain)
-
-# Retrieve specific distribution
-retrieved = Distribution.get(dist.id)
-print(retrieved.custom_domain)
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Simulated CloudFront Distribution",
+  "type": "object",
+  "required": ["id", "custom_domain"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the simulated distribution."
+    },
+    "custom_domain": {
+      "type": "string",
+      "pattern": "^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))*$",
+      "description": "Custom domain attached to the distribution. Must be a valid DNS name."
+    }
+  },
+  "additionalProperties": false
+}
