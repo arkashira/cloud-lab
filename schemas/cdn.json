@@ -1,0 +1,12 @@
+# Create a new distribution
+dist = Distribution(custom_domain="example.com")
+dist.save()
+
+# List all distributions
+all_dists = Distribution.list_all()
+for d in all_dists:
+    print(d.id, d.custom_domain)
+
+# Retrieve specific distribution
+retrieved = Distribution.get(dist.id)
+print(retrieved.custom_domain)
