@@ -1,86 +1,75 @@
-"""
-Distribution configuration validator.
-
-The validator is deliberately lightweight so it can be used anywhere
-(in API handlers, background workers, CLI tools, etc.) without pulling
-in heavy dependencies such as Pydantic or FastAPI.
-"""
-
 import re
-from typing import Dict, List, Tuple
+from typing import List, Dict, Any
 
-
-# ----------------------------------------------------------------------
-# Regex for a DNS‑style hostname (sub‑domains allowed, TLD ≥ 2 chars)
-# ----------------------------------------------------------------------
-DOMAIN_REGEX = re.compile(
-    r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$",
-    re.IGNORECASE,
-)
-
-
-class ValidationError(Exception):
+class DistributionValidator:
     """
-    Raised when a distribution payload fails validation.
+    Validates the payload for a Distribution resource.
 
-    Attributes
-    ----------
-    errors: List[str]
-        Human‑readable error messages collected during validation.
+    Rules
+    -----
+    * ``name``  – required, non‑empty string.
+    * ``domain`` – required, must match a DNS‑compatible hostname pattern.
+    * Additional fields can be added later without breaking the API.
     """
 
-    def __init__(self, errors: List[str]):
-        self.errors = errors
-        super().__init__("Distribution validation failed")
+    # RFC‑1123 compatible hostname regex (labels 1‑63 chars, total ≤255)
+    _DOMAIN_REGEX = re.compile(
+        r'^(?=.{1,255}$)([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?'
+        r'(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.?)$'
+    )
 
+    def __init__(self, payload: Dict[str, Any]):
+        self.payload = payload or {}
 
-def _check_required_fields(data: Dict, required: List[str]) -> List[str]:
-    """Return a list of missing/empty‑field messages."""
-    msgs = []
-    for field in required:
-        if not data.get(field):
-            msgs.append(f"'{field}' is required.")
-    return msgs
+    # ------------------------------------------------------------------ #
+    # Public API
+    # ------------------------------------------------------------------ #
+    def validate(self) -> List[Dict[str, str]]:
+        """
+        Returns a list of error dictionaries.
+        Empty list → payload is valid.
+        """
+        errors: List[Dict[str, str]] = []
 
+        # ---- name ----------------------------------------------------- #
+        if not self.payload.get('name'):
+            errors.append({
+                'field': 'name',
+                'message': 'Name is required.'
+            })
+        elif not isinstance(self.payload['name'], str):
+            errors.append({
+                'field': 'name',
+                'message': 'Name must be a string.'
+            })
 
-def _check_domain(domain: str) -> List[str]:
-    """Return a list containing a single error message if the domain is malformed."""
-    if domain and not DOMAIN_REGEX.fullmatch(domain):
-        return [f"Invalid domain format: '{domain}'."]
-    return []
+        # ---- domain --------------------------------------------------- #
+        domain = self.payload.get('domain')
+        if not domain:
+            errors.append({
+                'field': 'domain',
+                'message': 'Domain is required.'
+            })
+        elif not isinstance(domain, str):
+            errors.append({
+                'field': 'domain',
+                'message': 'Domain must be a string.'
+            })
+        elif not self._is_valid_domain(domain):
+            errors.append({
+                'field': 'domain',
+                'message': 'Invalid domain format.'
+            })
 
+        # Future‑proof: ignore unknown keys but could be flagged here.
+        return errors
 
-def validate_distribution(data: Dict) -> Tuple[bool, List[str]]:
-    """
-    Validate a distribution payload.
-
-    Parameters
-    ----------
-    data: Dict
-        The raw payload (e.g. ``request.json()``).
-
-    Returns
-    -------
-    Tuple[bool, List[str]]
-        ``(True, [])`` if the payload is valid, otherwise ``(False, errors)``.
-    """
-    errors: List[str] = []
-
-    # 1️⃣ Required fields
-    errors.extend(_check_required_fields(data, ["name", "domain"]))
-
-    # 2️⃣ Domain format
-    errors.extend(_check_domain(data.get("domain", "")))
-
-    return (len(errors) == 0, errors)
-
-
-def validate_distribution_or_raise(data: Dict) -> None:
-    """
-    Convenience wrapper that raises :class:`ValidationError` on failure.
-    Useful when you prefer exception‑driven flow (e.g. inside FastAPI
-    dependency functions).
-    """
-    ok, errors = validate_distribution(data)
-    if not ok:
-        raise ValidationError(errors)
+    # ------------------------------------------------------------------ #
+    # Private helpers
+    # ------------------------------------------------------------------ #
+    @classmethod
+    def _is_valid_domain(cls, domain: str) -> bool:
+        """
+        Returns True if *domain* matches a sane hostname pattern.
+        """
+        return bool(cls._DOMAIN_REGEX.fullmatch(domain.strip()))

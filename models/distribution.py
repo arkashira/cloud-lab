@@ -1,56 +1,21 @@
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List
+from dataclasses import dataclass, asdict
+from typing import ClassVar, List
 
-from ..enums.status import DistributionStatus
-from .metrics import DistributionMetrics
-
-
-@dataclass(frozen=True)
+@dataclass
 class Distribution:
-    """
-    Core model representing a CDN distribution.
-    """
-    id: str
+    """Simple in‑memory model; swap with an ORM later."""
     name: str
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    status: DistributionStatus = DistributionStatus.SIMULATED
-    metrics: DistributionMetrics = field(default_factory=DistributionMetrics)
+    domain: str
 
-    # ------------------------------------------------------------------ #
-    # Convenience helpers
-    # ------------------------------------------------------------------ #
-    def is_simulated(self) -> bool:
-        """Return ``True`` when the distribution is a simulated instance."""
-        return self.status == DistributionStatus.SIMULATED
+    # In‑memory store – thread‑unsafe but fine for a demo / unit tests
+    _store: ClassVar[List["Distribution"]] = []
 
-    def is_active(self) -> bool:
-        """Return ``True`` when the distribution is actively serving traffic."""
-        return self.status == DistributionStatus.ACTIVE
-
-    # ------------------------------------------------------------------ #
-    # Query utilities
-    # ------------------------------------------------------------------ #
     @classmethod
-    def filter_by_status(
-        cls,
-        distributions: List["Distribution"],
-        status: DistributionStatus,
-    ) -> List["Distribution"]:
-        """
-        Return a sub‑list containing only the distributions whose ``status``
-        matches the supplied ``status`` argument.
+    def create(cls, name: str, domain: str) -> "Distribution":
+        instance = cls(name=name, domain=domain)
+        cls._store.append(instance)
+        return instance
 
-        Parameters
-        ----------
-        distributions: List[Distribution]
-            Collection to search.
-        status: DistributionStatus
-            Desired status.
-
-        Returns
-        -------
-        List[Distribution]
-            All items from *distributions* with ``dist.status == status``.
-        """
-        return [dist for dist in distributions if dist.status == status]
+    @classmethod
+    def all(cls) -> List["Distribution"]:
+        return list(cls._store)
