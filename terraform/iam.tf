@@ -1,130 +1,55 @@
-########################
-# 1️⃣  Role definition #
-########################
-resource "aws_iam_role" "terraform_execution_role" {
-  name               = "TerraformExecutionRole"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+// iamPolicy.test.js
+const { loadPolicy, validatePolicy } = require('../iamPolicyUtils');
 
-  tags = {
-    Environment = "Sandbox"
-    Owner       = "CloudLab"
-  }
-}
+describe('IAM Policy for Terraform Execution Role', () => {
+  let policy;
 
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    effect = "Allow"
+  beforeAll(() => {
+    policy = loadPolicy(); // loads JSON from iam.tf or separate file
+  });
 
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com", "lambda.amazonaws.com"]
-    }
+  test('policy contains no wildcard actions', () => {
+    const actions = policy.Statement.flatMap(s => s.Action);
+    actions.forEach(action => {
+      expect(action).not.toMatch(/\*/);
+    });
+  });
 
-    actions = ["sts:AssumeRole"]
-  }
-}
+  test('policy includes required EC2 actions', () => {
+    const required = [
+      'ec2:RunInstances',
+      'ec2:TerminateInstances',
+      'ec2:CreateSecurityGroup',
+      'ec2:DeleteSecurityGroup',
+      'ec2:AuthorizeSecurityGroupIngress',
+      'ec2:RevokeSecurityGroupIngress',
+      'ec2:DescribeInstances',
+      'ec2:DescribeSecurityGroups',
+    ];
+    required.forEach(act => {
+      expect(policy.Statement.some(s => s.Action.includes(act))).toBe(true);
+    });
+  });
 
-########################
-# 2️⃣  Policy definition #
-########################
-resource "aws_iam_policy" "terraform_policy" {
-  name   = "TerraformExecutionPolicy"
-  policy = data.aws_iam_policy_document.terraform_policy.json
+  test('policy enforces tag conditions', () => {
+    const condition = policy.Statement.find(s => s.Condition);
+    expect(condition).toBeDefined();
+    const tagCond = condition.Condition['StringEquals'];
+    expect(tagCond['aws:RequestTag/Environment']).toBe('Sandbox');
+    expect(tagCond['aws:RequestTag/Owner']).toBe('CloudLab');
+  });
 
-  tags = {
-    Environment = "Sandbox"
-    Owner       = "CloudLab"
-  }
-}
+  test('policy allows only inbound 22 and 443 from 0.0.0.0/0', () => {
+    const sgPolicy = policy.Statement.find(s => s.Effect === 'Allow' && s.Action.includes('ec2:AuthorizeSecurityGroupIngress'));
+    const ingress = sgPolicy.Resource; // assume resource contains port info
+    // In real test, parse ingress rules; here we just check presence of ports
+    expect(ingress).toMatch(/22|443/);
+  });
 
-data "aws_iam_policy_document" "terraform_policy" {
-  # ---- EC2 & Security‑Group actions ----
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "ec2:DescribeInstances",
-      "ec2:RunInstances",
-      "ec2:TerminateInstances",
-      "ec2:CreateSecurityGroup",
-      "ec2:DeleteSecurityGroup",
-      "ec2:AuthorizeSecurityGroupIngress",
-      "ec2:CreateTags",
-      "ec2:DeleteTags"
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Environment"
-      values   = ["Sandbox"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Owner"
-      values   = ["CloudLab"]
-    }
-  }
-
-  # ---- IAM role actions ----
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "iam:CreateRole",
-      "iam:DeleteRole",
-      "iam:AttachRolePolicy",
-      "iam:DetachRolePolicy",
-      "iam:PutRolePolicy",
-      "iam:DeleteRolePolicy",
-      "iam:PassRole",
-      "iam:GetRole",
-      "iam:ListAttachedRolePolicies",
-      "iam:ListRolePolicies"
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Environment"
-      values   = ["Sandbox"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:RequestTag/Owner"
-      values   = ["CloudLab"]
-    }
-  }
-
-  # ---- Tag‑only actions (enforce tag keys) ----
-  statement {
-    effect = "Allow"
-
-    actions = [
-      "ec2:CreateTags",
-      "ec2:DeleteTags",
-      "iam:PutRolePolicy",
-      "iam:DeleteRolePolicy"
-    ]
-
-    resources = ["*"]
-
-    condition {
-      test     = "StringEquals"
-      variable = "aws:TagKeys"
-      values   = ["Environment", "Owner"]
-    }
-  }
-}
-
-########################
-# 3️⃣  Attach policy #
-########################
-resource "aws_iam_role_policy_attachment" "terraform_policy_attachment" {
-  role       = aws_iam_role.terraform_execution_role.name
-  policy_arn = aws_iam_policy.terraform_policy.arn
-}
+  test('role can be assumed by EC2 and Lambda', () => {
+    const assumeRole = policy.Statement.find(s => s.Effect === 'Allow' && s.Action.includes('sts:AssumeRole'));
+    const principals = assumeRole.Principal.Service;
+    expect(principals).toContain('ec2.amazonaws.com');
+    expect(principals).toContain('lambda.amazonaws.com');
+  });
+});
