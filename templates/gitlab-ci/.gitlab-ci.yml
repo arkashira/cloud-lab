@@ -1,0 +1,38 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  APP_NAME: cloud-lab
+  NODE_ENV: production
+
+build_job:
+  stage: build
+  image: node:20-alpine
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+test_job:
+  stage: test
+  image: node:20-alpine
+  script:
+    - npm ci
+    - npm test
+  allow_failure: false
+
+deploy_job:
+  stage: deploy
+  image: node:20-alpine
+  script:
+    - echo "Deploying $APP_NAME to production"
+    - npm run deploy
+  only:
+    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
