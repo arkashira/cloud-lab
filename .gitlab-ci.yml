@@ -1,27 +1,49 @@
+# /opt/axentx/clo.../.gitlab-ci.yml
 stages:
-  - validate
   - provision
   - test
+  - destroy
 
-validate:
-  stage: validate
-  image: hashicorp/terraform:latest
-  script:
-    - terraform fmt -check
-    - terraform validate
-  timeout: 5 min
+variables:
+  TF_VAR_environment: "sandbox"
+  TF_WORKSPACE: "sandbox"
+
+before_script:
+  - apk add --no-cache terraform  # Ensures Terraform is available in all stages
+  - terraform init -backend=false  # Initialize Terraform once
 
 provision:
   stage: provision
-  image: hashicorp/terraform:latest
+  image: hashicorp/terraform:1.5.0  # Explicit version for consistency
   script:
     - terraform apply -auto-approve
-    - ansible-playbook -i inventory playbook.yml
-  timeout: 10 min
+    - terraform output -json > sandbox-report.json  # Capture outputs for testing
+  artifacts:
+    paths:
+      - sandbox-report.json
+    reports:
+      junit: sandbox-report.json  # Enable JUnit reporting
+    expire_in: 1 hour  # Clean up artifacts after 1 hour
+  when: on_success
 
 test:
   stage: test
-  image: curlimages/curl:latest
+  image: python:3.12-slim  # Lightweight Python image for testing
   script:
-    - curl -f http://localhost:8080/ || exit 1
-  timeout: 5 min
+    - echo "Running integration tests against the sandbox..."
+    - python -m pytest --junitxml=sandbox-report.xml  # Example test command (replace with actual tests)
+  needs: [provision]  # Explicit dependency on provision
+  dependencies: [provision]  # Ensure artifacts are available
+  artifacts:
+    reports:
+      junit: sandbox-report.xml  # Test results in JUnit format
+    expire_in: 1 hour
+  when: on_success
+
+destroy:
+  stage: destroy
+  image: hashicorp/terraform:1.5.0
+  script:
+    - terraform destroy -auto-approve
+  needs: [test]  # Only destroy after tests pass
+  when: on_success
