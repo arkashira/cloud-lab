@@ -1,0 +1,38 @@
+{
+  "DistributionConfig": {
+    "CallerReference": "cloud-lab-cdn-20240513",
+    "Aliases": {
+      "Quantity": 0
+    },
+    "DefaultRootObject": "index.html",
+    "Origins": {
+      "Quantity": 1,
+      "Items": [
+        {
+          "Id": "S3-Origin",
+          "DomainName": "my-bucket.s3.amazonaws.com",
+          "S3OriginConfig": {
+            "OriginAccessIdentity": ""
+          }
+        }
+      ]
+    },
+    "DefaultCacheBehavior": {
+      "TargetOriginId": "S3-Origin",
+      "ForwardedValues": {
+        "QueryString": false,
+        "Cookies": {
+          "Forward": "none"
+        }
+      },
+      "TrustedSigners": {
+        "Enabled": false,
+        "Quantity": 0
+      },
+      "ViewerProtocolPolicy": "redirect-to-https",
+      "MinTTL": 3600
+    },
+    "Comment": "CloudFront distribution for cloud-lab quickstart",
+    "Enabled": true
+  }
+}
