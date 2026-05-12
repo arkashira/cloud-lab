@@ -1,12 +1,9 @@
 # Quick Start Guide
 
-Welcome to **cloud‑lab**! This guide will walk you through the essential steps to get your first project up and running, troubleshoot common issues, and explore our template examples.
+Welcome to the cloud-lab quick start guide! This guide will help you get up and running with basic provisioning and troubleshooting.
 
-## Prerequisites
+## Basic Provisioning
 
-- A GitHub account  
-- Docker Desktop (or any container runtime)  
-- `kubectl` installed and configured for your cluster  
-- `helm` installed  
-
-## 1. Clone the Repository
+1. **Install Prerequisites**:
+   - Ensure you have Python 3.8 or later installed.
+   - Install the cloud-lab CLI tool:

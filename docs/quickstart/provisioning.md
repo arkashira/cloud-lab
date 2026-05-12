@@ -1,9 +1,12 @@
 # Provisioning Guide
 
-This guide explains how to provision cloud resources for your cloud‑lab projects.
+This guide provides detailed instructions on provisioning resources in cloud-lab.
 
-## 1. Choose a Cloud Provider
+## Provisioning a Virtual Machine
 
-cloud‑lab currently supports AWS, GCP, and Azure. Pick one and set up the CLI credentials.
+1. **Prerequisites**:
+   - Ensure you have the cloud-lab CLI installed.
+   - Configure your API keys and credentials.
 
-### AWS
+2. **Provision a VM**:
+   - Use the following command to provision a VM:
