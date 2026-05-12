@@ -1,0 +1,29 @@
+
+# Use a Python 3.9 image as the base for the CI/CD pipeline
+image: python:3.9
+
+# Define the stages of the pipeline
+stages:
+  - test
+  - deploy
+
+# Set a variable for the Docker image tag, using the CI project name
+variables:
+  DOCKER_IMAGE: $CI_PROJECT_NAME
+
+# Test stage: runs unit tests
+test:
+  stage: test
+  script:
+    - pip install -r requirements.txt  # Install project dependencies
+    - python -m unittest discover -s tests -p 'test_*.py'  # Execute unit tests
+
+# Deploy stage: builds, pushes, and deploys the application
+deploy:
+  stage: deploy
+  script:
+    - docker build -t $DOCKER_IMAGE .  # Build the Docker image
+    - docker push $DOCKER_IMAGE  # Push the Docker image to the registry
+    - kubectl apply -f kubernetes/deployment.yaml  # Apply the Kubernetes deployment
+  only:
+    - main  # Restrict deployment to the main branch
