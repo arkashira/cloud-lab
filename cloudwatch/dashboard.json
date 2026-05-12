@@ -1,0 +1,25 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [
+            "CloudLab",
+            "SandboxDeployments",
+            "Environment",
+            "production"
+          ]
+        ],
+        "period": 86400,
+        "stat": "Sum",
+        "region": "us-east-1",
+        "title": "Sandbox Deployments per Month"
+      }
+    }
+  ]
+}
