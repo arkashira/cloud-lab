@@ -1,0 +1,32 @@
+- name: Install PostgreSQL
+  apt:
+    name: "{{ postgres_pkg }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == 'Debian'
+  register: postgres_install
+
+- name: Install PostgreSQL (RedHat)
+  yum:
+    name: "{{ postgres_pkg }}"
+    state: present
+  when: ansible_os_family == 'RedHat'
+  register: postgres_install
+
+- name: Ensure PostgreSQL is running
+  service:
+    name: "{{ postgres_pkg }}"
+    state: started
+    enabled: true
+
+- name: Create application database user
+  postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    state: present
+
+- name: Create application database
+  postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+    state: present

@@ -1,0 +1,12 @@
+---
+- name: Deploy web stack
+  hosts: web
+  become: true
+  roles:
+    - web
+
+- name: Deploy database stack
+  hosts: db
+  become: true
+  roles:
+    - db

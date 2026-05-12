@@ -1,0 +1,9 @@
+ansible_python_interpreter: /usr/bin/python3
+
+# OS‑specific package names
+apache_pkg: "{{ 'apache2' if ansible_os_family == 'Debian' else 'httpd' }}"
+postgres_pkg: "{{ 'postgresql' if ansible_os_family == 'Debian' else 'postgresql-server' }}"
+
+# Default ports
+http_port: 80
+postgres_port: 5432
