@@ -1,0 +1,133 @@
+---
+# Docker installation and configuration playbook
+- name: Install and configure Docker
+  hosts: all
+  become: yes
+  gather_facts: yes
+  
+  vars:
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    docker_service_state: started
+    docker_enabled: yes
+    docker_users: []
+  
+  pre_tasks:
+    - name: Verify OS family is supported
+      fail:
+        msg: "Unsupported OS family: {{ ansible_os_family }}"
+      when: ansible_os_family not in ["Debian", "RedHat"]
+  
+  tasks:
+    # === Debian/Ubuntu Setup ===
+    - name: Update apt cache (Debian)
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
+    
+    - name: Install prerequisites (Debian)
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: Add Docker GPG key (Debian)
+      ansible.builtin.apt_key:
+        url: "https://download.docker.com/linux/{{ ansible_os_family | lower }}/gpg"
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: Add Docker repository (Debian)
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/{{ ansible_os_family | lower }} {{ ansible_distribution_release }} stable"
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: Install Docker packages (Debian)
+      ansible.builtin.apt:
+        name: "{{ docker_packages }}"
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    # === RedHat/CentOS Setup ===
+    - name: Install Docker packages (RHEL)
+      ansible.builtin.yum:
+        name: "{{ docker_packages }}"
+        state: present
+      when: ansible_os_family == "RedHat"
+    
+    # === Common Configuration ===
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.service:
+        name: docker
+        state: "{{ docker_service_state }}"
+        enabled: "{{ docker_enabled }}"
+    
+    - name: Create docker group
+      ansible.builtin.group:
+        name: docker
+        state: present
+    
+    - name: Add users to docker group
+      ansible.builtin.user:
+        name: "{{ item }}"
+        groups: docker
+        append: yes
+      loop: "{{ docker_users }}"
+      when: docker_users | length > 0
+    
+    - name: Verify Docker is running
+      ansible.builtin.command: docker version
+      register: docker_version
+      changed_when: false
+      failed_when: docker_version.rc != 0
+    
+    - name: Set Docker daemon configuration
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            },
+            "storage-driver": "overlay2",
+            "live-restore": true,
+            "default-address-pools": [
+              {"base": "172.17.0.0/16", "size": 24}
+            ]
+          }
+        mode: '0644'
+      notify: Restart Docker
+    
+    - name: Pull commonly used images
+      community.docker.docker_image:
+        name: "{{ item }}"
+        source: pull
+      loop:
+        - alpine:latest
+        - nginx:latest
+      ignore_errors: yes
+    
+    - name: Enable Docker socket (optional - for rootless consideration)
+      ansible.builtin.file:
+        path: /var/run/docker.sock
+        mode: '0666'
+      changed_when: false
+      when: false  # Disabled by default for security
+  
+  handlers:
+    - name: Restart Docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted

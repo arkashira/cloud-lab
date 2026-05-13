@@ -1,0 +1,18 @@
+---
+# Main entry point playbook - orchestrates all configuration after Terraform
+- name: Main provision workflow
+  hosts: all
+  become: yes
+  serial: 1
+  gather_facts: yes
+  
+  tasks:
+    - name: Include Docker configuration
+      import_playbook: docker.yml
+    
+    - name: Include user configuration
+      import_playbook: users.yml
+    
+    - name: Display completion message
+      debug:
+        msg: "All post-provisioning tasks completed successfully"
