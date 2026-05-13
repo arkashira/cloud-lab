@@ -1,0 +1,89 @@
+stages:
+  - terraform_plan
+  - terraform_apply
+  - ansible_deploy
+
+variables:
+  # Use the official Docker images that contain the required tools.
+  TF_IMAGE: hashicorp/terraform:latest
+  ANSIBLE_IMAGE: ansible/ansible:latest
+  # Ensure Terraform does not prompt for input.
+  TF_INPUT: "false"
+  # Set Terraform variables
+  TF_VAR_environment: "lab"
+  TF_VAR_region: "us-west-2"
+  TF_VAR_project_name: "cloud-lab"
+
+# ------------------------------------------------------------------
+# Terraform Plan
+# ------------------------------------------------------------------
+terraform:plan:
+  stage: terraform_plan
+  image: $TF_IMAGE
+  script:
+    - cd $TF_ROOT
+    - terraform init
+    - terraform fmt -check
+    - terraform validate
+    - terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - tfplan
+    expire_in: 24h
+  only:
+    - branches
+  tags:
+    - docker
+
+# ------------------------------------------------------------------
+# Terraform Apply
+# ------------------------------------------------------------------
+terraform:apply:
+  stage: terraform_apply
+  image: $TF_IMAGE
+  script:
+    - cd $TF_ROOT
+    - terraform init
+    - terraform apply -auto-approve tfplan
+  dependencies:
+    - terraform:plan
+  artifacts:
+    paths:
+      - .terraform
+    expire_in: 24h
+  when: manual   # Prevent automatic apply; user must trigger.
+  only:
+    - branches
+  tags:
+    - docker
+
+# ------------------------------------------------------------------
+# Ansible Playbook
+# ------------------------------------------------------------------
+ansible:deploy:
+  stage: ansible_deploy
+  image: $ANSIBLE_IMAGE
+  script:
+    - cd $ANSIBLE_ROOT
+    - ansible-galaxy collection install -r requirements.yml || true
+    - ansible-playbook -i inventory/hosts playbooks/site.yml
+  dependencies:
+    - terraform:apply
+  artifacts:
+    paths:
+      - ansible.log
+    expire_in: 24h
+  when: on_success
+  only:
+    - branches
+  tags:
+    - docker
+
+# ------------------------------------------------------------------
+# Caching
+# ------------------------------------------------------------------
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - $TF_ROOT/plugins
+    - $TF_ROOT/.terraform
