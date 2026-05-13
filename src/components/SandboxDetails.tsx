@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sandbox } from '../types'; // Assuming Sandbox type is defined in ../types
+import { Sandbox } from '../types';
 
 interface SandboxDetailsProps {
   sandbox: Sandbox;
@@ -7,15 +7,25 @@ interface SandboxDetailsProps {
 
 const SandboxDetails: React.FC<SandboxDetailsProps> = ({ sandbox }) => {
   return (
-    <div>
+    <div className="sandbox-details">
       <h2>Sandbox Details</h2>
-      <p><strong>ID:</strong> {sandbox.id}</p>
-      <p><strong>Name:</strong> {sandbox.name}</p>
-      <p><strong>Status:</strong> {sandbox.status}</p>
-      {sandbox.iamRoleArn && (
-        <p><strong>IAM Role ARN:</strong> {sandbox.iamRoleArn}</p>
-      )}
-      {/* Additional sandbox details can be added here as needed */}
+      <dl>
+        <dt>ID:</dt>
+        <dd>{sandbox.id}</dd>
+
+        <dt>Name:</dt>
+        <dd>{sandbox.name}</dd>
+
+        <dt>Status:</dt>
+        <dd>{sandbox.status}</dd>
+
+        {sandbox.iamRoleArn && (
+          <>
+            <dt>IAM Role ARN:</dt>
+            <dd>{sandbox.iamRoleArn}</dd>
+          </>
+        )}
+      </dl>
     </div>
   );
 };
