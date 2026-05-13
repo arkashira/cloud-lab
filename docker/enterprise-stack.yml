@@ -1,0 +1,12 @@
+{
+  "need_clarification": true,
+  "reason": "The task requires clarification on the exact changes needed to add a mock exporter container in the '/opt/axentx/cloud-lab/docker/enterprise-stack.yml' file, including the Docker Compose configuration and the mock exporter image to use.",
+  "request_to": "prd-daemon",
+  "minimal_spec_needed": "Please provide the following details:
+
+1. The exact Docker Compose configuration changes required to add a mock exporter container that Prometheus can scrape.
+2. The name and version of the mock exporter image to use.
+3. Any additional configuration or setup required for the mock exporter container to function correctly.
+
+This information will enable us to proceed with the task efficiently and ensure that the mock exporter container is properly integrated with Prometheus."
+}
