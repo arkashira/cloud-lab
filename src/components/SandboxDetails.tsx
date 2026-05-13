@@ -15,7 +15,7 @@ const SandboxDetails: React.FC<SandboxDetailsProps> = ({ sandbox }) => {
       {sandbox.iamRoleArn && (
         <p><strong>IAM Role ARN:</strong> {sandbox.iamRoleArn}</p>
       )}
-      {/* Other sandbox details can be added here */}
+      {/* Additional sandbox details can be added here as needed */}
     </div>
   );
 };
