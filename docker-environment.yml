@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  axentx-cloud-lab:
+    image: axentx/cloud-lab:latest
+    container_name: axentx-cloud-lab
+    environment:
+      - DOCKER_VERSION=20.10.8
+      - NODE_VERSION=14.17.0
+      - PYTHON_VERSION=3.9.5
+    volumes:
+      - ./:/workspace
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+    command: /bin/bash
