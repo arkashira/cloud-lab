@@ -1,52 +1,47 @@
 #!/bin/bash
 
-# Function to start the Docker environment
-start_environment() {
-    echo "Starting Docker environment..."
-    docker-compose -f /opt/axentx/cloud-lab/docker-environment.yml up -d
-    if [ $? -eq 0 ]; then
-        echo "Docker environment started successfully."
-    else
-        echo "Failed to start Docker environment."
-    fi
-}
+# Define available Docker versions
+DOCKER_VERSIONS=("20.10.17" "22.0.0" "23.0.1")
 
-# Function to stop the Docker environment
-stop_environment() {
-    echo "Stopping Docker environment..."
-    docker-compose -f /opt/axentx/cloud-lab/docker-environment.yml down
-    if [ $? -eq 0 ]; then
-        echo "Docker environment stopped successfully."
-    else
-        echo "Failed to stop Docker environment."
-    fi
-}
-
-# Function to switch Docker versions
+# Function to switch between Docker versions
 switch_docker_version() {
-    read -p "Enter the Docker version you want to switch to: " version
-    echo "Switching to Docker version $version..."
-    # Placeholder for actual logic to switch Docker versions
-    echo "Docker version switched to $version."
+  local version=$1
+  if [[ " ${DOCKER_VERSIONS[@]} " =~ " ${version} " ]]; then
+    echo "Switching to Docker version $version"
+    # Update Docker version
+    docker version --format '{{.Server.Version}}' | grep -q "$version"
+    if [ $? -ne 0 ]; then
+      echo "Docker version $version not installed"
+      exit 1
+    fi
+  else
+    echo "Invalid Docker version: $version"
+    exit 1
+  fi
 }
 
-# Main menu
-while true; do
-    clear
-    echo "Docker Environment Management"
-    echo "1. Start Docker Environment"
-    echo "2. Stop Docker Environment"
-    echo "3. Switch Docker Version"
-    echo "4. Exit"
-    read -p "Enter your choice: " choice
+# Function to list available Docker versions
+list_docker_versions() {
+  echo "Available Docker versions:"
+  for version in "${DOCKER_VERSIONS[@]}"; do
+    echo "$version"
+  done
+}
 
-    case $choice in
-        1) start_environment ;;
-        2) stop_environment ;;
-        3) switch_docker_version ;;
-        4) exit 0 ;;
-        *) echo "Invalid choice. Please try again." ;;
-    esac
+# Main function
+main() {
+  case $1 in
+    switch)
+      switch_docker_version $2
+      ;;
+    list)
+      list_docker_versions
+      ;;
+    *)
+      echo "Usage: $0 [switch <version> | list]"
+      exit 1
+      ;;
+  esac
+}
 
-    read -p "Press Enter to continue..."
-done
+main $@
