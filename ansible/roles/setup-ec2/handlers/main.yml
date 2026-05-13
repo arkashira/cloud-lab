@@ -1,0 +1,6 @@
+---
+- name: report successful EC2 setup
+  debug:
+    msg: |
+      ✅ EC2 setup completed successfully.
+      📄 Log file uploaded to s3://{{ cloud_lab_logs_bucket }}/ec2-setup/{{ inventory_hostname }}/{{ log_file_name }}

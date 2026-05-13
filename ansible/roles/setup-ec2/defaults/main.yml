@@ -1,0 +1,19 @@
+---
+# Packages we need on every EC2 instance
+setup_ec2_packages:
+  - python3
+  - python3-pip
+  - awscli
+
+# SSH public key to install (relative to the controller)
+setup_ec2_ssh_pubkey_path: "/opt/axentx/cloud-lab/ssh/id_rsa.pub"
+
+# S3 bucket where the log will be stored
+cloud_lab_logs_bucket: "cloud-lab-logs"
+
+# AWS region for the bucket (defaults to the region the instance lives in)
+aws_region: "us-east-1"
+
+# Owner / group for the log file (usually root)
+log_file_owner: "root"
+log_file_group: "root"
