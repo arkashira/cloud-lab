@@ -1,2 +1,1 @@
-Safety: Safe
-Categories: None
+REJECTED: The lack of market demand signal and TAM/SAM/SOM data makes it impossible to construct a credible recurring revenue model for extending cloud-lab to Azure instance creation and management.

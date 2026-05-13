@@ -1,7 +1,7 @@
 # Pitch result: ?
-- id: `20260509-134328-reddit-04583765dfe34f47`
+- id: `20260509-204711-reddit-1fccfe246486f556`
 - final_verdict: **PIVOT**
-- avg_score: 5.2/10
+- avg_score: 5.0/10
 
 ## Panel breakdown
 
@@ -21,9 +21,9 @@
 **Strengths:**
 
 **Concerns:**
-- panel response unparseable
+- LLM unavailable: RuntimeError
 
-**What to change**: re-run pitch with cleaner inputs
+**What to change**: re-run when LLM providers recover
 
 ### Strategic Investor — PIVOT (5/10)
 **would_invest_or_pay**: False
@@ -35,22 +35,15 @@
 
 **What to change**: re-run when LLM providers recover
 
-### Industry Mentor — PIVOT (6/10)
+### Industry Mentor — PIVOT (5/10)
 **would_invest_or_pay**: False
 
 **Strengths:**
-- Clear target audience of Linux engineers transitioning to DevOps/SRE roles
-- Well-defined pricing tiers with expansion revenue paths
-- Strong technical stack with Infrastructure as Code and Configuration Management
 
 **Concerns:**
-- Lack of specific competitor analysis and differentiation
-- Unclear monetization path and customer acquisition strategy
-- Potential high customer acquisition cost (CAC) due to niche market
+- LLM unavailable: RuntimeError
 
-**Kill question**: How do you plan to differentiate from existing cloud-based learning platforms and attract a significant number of users?
-
-**What to change**: Conduct a thorough competitor analysis and clearly articulate your differentiation strategy.
+**What to change**: re-run when LLM providers recover
 
 ### Thai Market Analyst — PIVOT (5/10)
 **would_invest_or_pay**: False
@@ -68,6 +61,6 @@
 **Strengths:**
 
 **Concerns:**
-- panel response unparseable
+- LLM unavailable: RuntimeError
 
-**What to change**: re-run pitch with cleaner inputs
+**What to change**: re-run when LLM providers recover

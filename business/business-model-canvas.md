@@ -1,3 +1,59 @@
-# business-model-canvas.md
+## Customer Segments
+- Cloud developers and engineers
+- Students and educators in cloud computing
+- Small to medium-sized enterprises (SMEs) looking to experiment with cloud services
+- Individuals learning cloud platforms
 
-Generation failed: all LLM providers failed; last=hf-final: HTTP Error 402: Payment Required (after surrogate-v1: v1: SSE returned no usable data (after Gemini: HTTP 429 (after Codespace-fleet: all codespace endpoints down: Codespace-LLM-0: HTTP 404 (after HF-Inference: HTTP 402 (after CF-AI/@cf/meta/llama-3.1-8b-instruct: HTTP 429 (after Chutes-Gemma-4-31B/google/gemma-4-31B-turbo-TEE: HTTP 429)))))); cooldowns: ['CF-AI', 'CF-Gateway-Cerebras', 'CF-Gateway-Groq', 'CF-Gateway-WAI', 'Cerebras', 'Cerebras-Llama', 'Chutes-DeepSeek-V3.1', 'Chutes-GLM-5.1', 'Chutes-Gemma-4-31B', 'Chutes-Kimi-K2.5', 'Chutes-MiniMax-M2.5', 'Chutes-Qwen3-32B', 'Chutes-Qwen3.5-397B', 'Codespace-LLM-0', 'DeepSeek', 'DeepSeek-R1', 'G4F-Gemini-2.5-Flash', 'G4F-Gemini-2.5-Pro', 'G4F-Groq-Llama-3.3-70B', 'G4F-Ollama-DeepSeek-V4-Pro', 'G4F-Ollama-Devstral-2-123B', 'G4F-Ollama-GLM-5.1', 'G4F-Ollama-GPT-OSS-120B', 'G4F-Ollama-Gemma3-12B', 'G4F-Ollama-Gemma3-4B', 'G4F-Ollama-Kimi-K2.6', 'G4F-Ollama-MiniMax-M2.5', 'G4F-Ollama-Nemotron-3-Super', 'G4F-Ollama-Qwen3-Next-80B', 'G4F-Perplexity-Turbo', 'Gemini', 'GitHub-Models-1', 'GitHub-Models-10', 'GitHub-Models-2', 'GitHub-Models-3', 'GitHub-Models-4', 'GitHub-Models-5', 'GitHub-Models-6', 'GitHub-Models-7', 'GitHub-Models-8', 'GitHub-Models-9', 'Groq', 'HF-Router-DeepSeek-V4', 'HF-Router-Kimi-K2', 'HF-Router-Ling-1T', 'HF-Router-Qwen3-235B', 'HF-Router-Qwen3-Coder-1', 'HF-Router-Qwen3-Coder-2', 'HF-Router-Qwen3-Coder-3', 'HF-Router-Qwen3-Coder-4', 'HF-Router-Qwen3-Coder-5', 'LLM7-Mistral', 'LLM7-Qwen', 'NVIDIA-NIM', 'OVH-GPT-OSS-120B', 'OVH-Mistral-Nemo', 'OVH-Qwen2.5-VL-72B', 'OVH-Qwen3-32B', 'OVH-Qwen3-Coder-30B', 'OVH-Qwen3Guard-0.6B', 'OpenRouter', 'OpenRouter-Free-GPT-OSS-120B', 'OpenRouter-Free-GPT-OSS-20B', 'OpenRouter-Free-Liquid-LFM-2.5', 'OpenRouter-Free-NVIDIA-Nemotron-120B', 'OpenRouter-Free-Nemotron-Nano-30B', 'OpenRouter-Free-Qwen3-Coder', 'Pollinations-CodeQwen', 'Pollinations-DeepSeek', 'Pollinations-DeepSeek-V3', 'Pollinations-Evil', 'Pollinations-Grok-3', 'Pollinations-Haiku', 'Pollinations-Llamascout', 'Pollinations-Sao', 'Pollinations-SearchGPT', 'Pollinations-Sur', 'SambaNova', 'Together', 'Together-Qwen', 'ZAI-GLM-4.5-Flash', 'ZeroGPU-Coder-1', 'ZeroGPU-Coder-2', 'v1']
+## Value Propositions
+- Simplified instance creation and management for Azure
+- Cost-effective learning and experimentation with cloud services
+- Reduced risk of financial loss due to accidental charges
+- Access to a variety of cloud services in a single platform
+- Support for multiple cloud providers, including Azure and AWS
+
+## Channels
+- Direct sales to enterprises
+- Partnerships with cloud service providers
+- Online marketing and advertising
+- Social media and community engagement
+- Referral programs
+
+## Customer Relationships
+- Dedicated customer support
+- Community forums and knowledge base
+- Regular updates and feature enhancements
+- Training and educational resources
+- Feedback loops for continuous improvement
+
+## Revenue Streams
+- **Free tier**: Basic access to cloud-lab services
+- **Pro tier**: $10/user/month (฿350/user/month) for advanced features and support
+- **Enterprise tier**: Custom pricing for large-scale deployments and dedicated support
+
+## Key Resources
+- Cloud infrastructure and services
+- Development and maintenance team
+- Marketing and sales resources
+- Customer support and training materials
+- Partnerships with cloud service providers
+
+## Key Activities
+- Development and maintenance of cloud-lab platform
+- Marketing and sales activities
+- Customer support and training
+- Partnership management
+- Continuous product development and innovation
+
+## Key Partners
+- Cloud service providers (AWS, Azure, etc.)
+- Educational institutions
+- Technology integrators
+- Marketing and advertising agencies
+- Customer support and training providers
+
+## Cost Structure
+- Development and maintenance costs
+- Cloud infrastructure and service costs
+- Marketing and sales expenses
+- Customer support and training costs
+- Partnership management costs
