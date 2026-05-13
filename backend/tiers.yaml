@@ -1,0 +1,13 @@
+# -------------------------------------------------
+# Pricing‑tier definition file used by the Cloud‑Lab backend.
+# Add new tiers below the existing “free” block – keep the
+# same structure (name, description, limits, price, upgrade_url)
+# -------------------------------------------------
+free:
+  name: Free
+  description: "Free tier with limited resources"
+  limits:
+    concurrent_labs: 1          # maximum labs a user can run at once
+    storage_gb: 2               # total storage allocated to the user
+  price: 0                      # USD per month
+  upgrade_url: "/upgrade"       # UI route that points to the upgrade flow
