@@ -1,0 +1,180 @@
+{
+  "registry_version": "1.1.0",
+  "last_updated": "2026-05-13T00:00:00Z",
+  "max_provisioning_duration_minutes": 5,
+  "session_tag_key": "cloudlab_session_id",
+  "templates": [
+    {
+      "id": "vpc-standard",
+      "name": "Standard VPC",
+      "description": "Creates a VPC with public & private subnets across 3 AZs, an IGW, NAT gateways, and a default route table.",
+      "category": "networking",
+      "provider": "aws",
+      "estimated_duration_minutes": 2,
+      "terraform": {
+        "source": "./modules/vpc",
+        "version": ">= 1.0.0"
+      },
+      "variables": {
+        "vpc_cidr": {
+          "type": "string",
+          "default": "10.0.0.0/16",
+          "description": "CIDR block for the VPC."
+        },
+        "availability_zones": {
+          "type": "list(string)",
+          "default": ["us-east-1a", "us-east-1b", "us-east-1c"],
+          "description": "AZs for subnet placement."
+        },
+        "public_subnet_cidrs": {
+          "type": "list(string)",
+          "default": ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"],
+          "description": "CIDRs for public subnets."
+        },
+        "private_subnet_cidrs": {
+          "type": "list(string)",
+          "default": ["10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"],
+          "description": "CIDRs for private subnets."
+        }
+      },
+      "tags": {
+        "managed_by": "cloud-lab",
+        "template": "vpc-standard"
+      },
+      "outputs": [
+        "vpc_id",
+        "public_subnet_ids",
+        "private_subnet_ids",
+        "nat_gateway_ids",
+        "internet_gateway_id"
+      ]
+    },
+    {
+      "id": "rds-postgres",
+      "name": "RDS PostgreSQL",
+      "description": "Creates a PostgreSQL RDS instance with optional read replica and Multi‑AZ support.",
+      "category": "database",
+      "provider": "aws",
+      "estimated_duration_minutes": 3,
+      "terraform": {
+        "source": "./modules/rds",
+        "version": ">= 1.0.0"
+      },
+      "variables": {
+        "vpc_id": {
+          "type": "string",
+          "required": true,
+          "description": "VPC ID to deploy RDS in."
+        },
+        "subnet_ids": {
+          "type": "list(string)",
+          "required": true,
+          "description": "Subnet IDs for RDS (must be in ≥2 AZs)."
+        },
+        "db_name": {
+          "type": "string",
+          "default": "cloudlabdb",
+          "description": "Database name."
+        },
+        "db_instance_class": {
+          "type": "string",
+          "default": "db.t3.micro",
+          "description": "RDS instance class."
+        },
+        "allocated_storage": {
+          "type": "number",
+          "default": 20,
+          "description": "Allocated storage in GB."
+        },
+        "engine_version": {
+          "type": "string",
+          "default": "14.7",
+          "description": "PostgreSQL engine version."
+        },
+        "multi_az": {
+          "type": "bool",
+          "default": false,
+          "description": "Enable Multi‑AZ deployment."
+        }
+      },
+      "tags": {
+        "managed_by": "cloud-lab",
+        "template": "rds-postgres"
+      },
+      "outputs": [
+        "db_instance_id",
+        "db_instance_endpoint",
+        "db_instance_address",
+        "db_name"
+      ],
+      "dependencies": ["vpc-standard"]
+    },
+    {
+      "id": "ecs-fargate",
+      "name": "ECS Fargate Cluster",
+      "description": "Creates an ECS Fargate cluster with a default service and task definition.",
+      "category": "compute",
+      "provider": "aws",
+      "estimated_duration_minutes": 3,
+      "terraform": {
+        "source": "./modules/ecs",
+        "version": ">= 1.0.0"
+      },
+      "variables": {
+        "cluster_name": {
+          "type": "string",
+          "default": "cloudlab-cluster",
+          "description": "Name for the ECS cluster."
+        },
+        "vpc_id": {
+          "type": "string",
+          "required": true,
+          "description": "VPC ID to deploy ECS in."
+        },
+        "subnet_ids": {
+          "type": "list(string)",
+          "required": true,
+          "description": "Subnet IDs for ECS tasks."
+        },
+        "desired_count": {
+          "type": "number",
+          "default": 2,
+          "description": "Desired number of tasks."
+        },
+        "container_image": {
+          "type": "string",
+          "default": "nginx:latest",
+          "description": "Container image for tasks."
+        },
+        "container_port": {
+          "type": "number",
+          "default": 80,
+          "description": "Container port."
+        },
+        "cpu": {
+          "type": "number",
+          "default": 256,
+          "description": "CPU units for task."
+        },
+        "memory": {
+          "type": "number",
+          "default": 512,
+          "description": "Memory in MB for task."
+        }
+      },
+      "tags": {
+        "managed_by": "cloud-lab",
+        "template": "ecs-fargate"
+      },
+      "outputs": [
+        "cluster_id",
+        "cluster_name",
+        "cluster_arn",
+        "service_id",
+        "service_name",
+        "task_definition_arn"
+      ],
+      "dependencies": ["vpc-standard"]
+    }
+  ]
+}
