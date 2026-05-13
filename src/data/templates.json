@@ -1,0 +1,86 @@
+[
+  {
+    "id": "1",
+    "name": "VPC with Public Subnets",
+    "description": "A VPC with public subnets and internet gateway.",
+    "previewImage": "/assets/vpc-public.png",
+    "components": ["VPC"]
+  },
+  {
+    "id": "2",
+    "name": "EKS Cluster",
+    "description": "Scalable Kubernetes cluster on EKS.",
+    "previewImage": "/assets/eks-cluster.png",
+    "components": ["EKS", "VPC"]
+  },
+  {
+    "id": "3",
+    "name": "S3 Static Website",
+    "description": "S3 bucket configured for static website hosting.",
+    "previewImage": "/assets/s3-website.png",
+    "components": ["S3"]
+  },
+  {
+    "id": "4",
+    "name": "Lambda Function",
+    "description": "Serverless function with API Gateway trigger.",
+    "previewImage": "/assets/lambda.png",
+    "components": ["Lambda", "API Gateway"]
+  },
+  {
+    "id": "5",
+    "name": "RDS PostgreSQL",
+    "description": "Managed PostgreSQL database with high availability.",
+    "previewImage": "/assets/rds-postgres.png",
+    "components": ["RDS"]
+  },
+  {
+    "id": "6",
+    "name": "EC2 Auto Scaling Group",
+    "description": "Auto scaling group with load balancer.",
+    "previewImage": "/assets/ec2-asg.png",
+    "components": ["EC2", "ALB"]
+  },
+  {
+    "id": "7",
+    "name": "IAM Roles for Service Accounts",
+    "description": "IAM roles for Kubernetes service accounts.",
+    "previewImage": "/assets/iam-ksa.png",
+    "components": ["IAM"]
+  },
+  {
+    "id": "8",
+    "name": "CloudFront CDN",
+    "description": "Content delivery network with custom domain.",
+    "previewImage": "/assets/cloudfront.png",
+    "components": ["CloudFront"]
+  },
+  {
+    "id": "9",
+    "name": "Route53 DNS",
+    "description": "Managed DNS zone with health checks.",
+    "previewImage": "/assets/route53.png",
+    "components": ["Route53"]
+  },
+  {
+    "id": "10",
+    "name": "SNS Topic",
+    "description": "Simple Notification Service topic with email subscription.",
+    "previewImage": "/assets/sns.png",
+    "components": ["SNS"]
+  },
+  {
+    "id": "11",
+    "name": "SQS Queue",
+    "description": "Simple Queue Service with DLQ.",
+    "previewImage": "/assets/sqs.png",
+    "components": ["SQS"]
+  },
+  {
+    "id": "12",
+    "name": "Multi-Region VPC Peering",
+    "description": "Peering between VPCs across regions.",
+    "previewImage": "/assets/vpc-peering.png",
+    "components": ["VPC"]
+  }
+]
