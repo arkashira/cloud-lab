@@ -1,0 +1,88 @@
+{
+  "templates": [
+    {
+      "id": "vpc-basic",
+      "name": "Basic VPC",
+      "description": "A minimal VPC with public and private subnets.",
+      "previewImage": "/assets/vpc-basic.png",
+      "components": ["VPC"]
+    },
+    {
+      "id": "vpc-advanced",
+      "name": "Advanced VPC",
+      "description": "VPC with NAT gateways, VPN, and peering.",
+      "previewImage": "/assets/vpc-advanced.png",
+      "components": ["VPC"]
+    },
+    {
+      "id": "eks-single-node",
+      "name": "EKS Single Node",
+      "description": "EKS cluster with a single managed node group.",
+      "previewImage": "/assets/eks-single-node.png",
+      "components": ["EKS"]
+    },
+    {
+      "id": "eks-multi-node",
+      "name": "EKS Multi Node",
+      "description": "EKS cluster with multiple node groups and autoscaling.",
+      "previewImage": "/assets/eks-multi-node.png",
+      "components": ["EKS"]
+    },
+    {
+      "id": "rds-postgres",
+      "name": "RDS PostgreSQL",
+      "description": "Managed PostgreSQL database with high availability.",
+      "previewImage": "/assets/rds-postgres.png",
+      "components": ["RDS"]
+    },
+    {
+      "id": "s3-website",
+      "name": "Static S3 Website",
+      "description": "Public S3 bucket configured for static website hosting.",
+      "previewImage": "/assets/s3-website.png",
+      "components": ["S3"]
+    },
+    {
+      "id": "lambda-api",
+      "name": "Lambda API",
+      "description": "Serverless API using API Gateway and Lambda.",
+      "previewImage": "/assets/lambda-api.png",
+      "components": ["Lambda", "API Gateway"]
+    },
+    {
+      "id": "cloudfront-cdn",
+      "name": "CloudFront CDN",
+      "description": "Global CDN distribution for static assets.",
+      "previewImage": "/assets/cloudfront-cdn.png",
+      "components": ["CloudFront"]
+    },
+    {
+      "id": "ecs-fargate",
+      "name": "ECS Fargate",
+      "description": "Containerized application on AWS Fargate.",
+      "previewImage": "/assets/ecs-fargate.png",
+      "components": ["ECS", "Fargate"]
+    },
+    {
+      "id": "elasticache-redis",
+      "name": "ElastiCache Redis",
+      "description": "Managed Redis cluster for caching.",
+      "previewImage": "/assets/elasticache-redis.png",
+      "components": ["ElastiCache"]
+    },
+    {
+      "id": "cloudwatch-logs",
+      "name": "CloudWatch Logs",
+      "description": "Centralized logging with CloudWatch Logs and Insights.",
+      "previewImage": "/assets/cloudwatch-logs.png",
+      "components": ["CloudWatch"]
+    },
+    {
+      "id": "iam-roles",
+      "name": "IAM Roles",
+      "description": "Predefined IAM roles for common services.",
+      "previewImage": "/assets/iam-roles.png",
+      "components": ["IAM"]
+    }
+  ]
+}
