@@ -1,0 +1,24 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - echo "Building the application..."
+    - make build
+
+test_job:
+  stage: test
+  script:
+    - echo "Testing the application..."
+    - make test
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploying the application..."
+    - make deploy
+  only:
+    - main
