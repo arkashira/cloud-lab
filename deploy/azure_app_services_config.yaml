@@ -1,0 +1,5 @@
+resource_group: cloudlab-rg
+location: eastus
+app_service_plan: cloudlab-plan
+sku: B1
+runtime: "PYTHON|3.9"
