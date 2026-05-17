@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Navigation Menu</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='navigation_menu.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <nav class="nav-wrapper">
+    <div class="nav-logo">
+      <a href="{{ url_for('home') }}">cloud-lab</a>
+    </div>
+    <ul class="nav-links">
+      <li><a href="{{ url_for('home') }}">Home</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropbtn">Azure</a>
+        <div class="dropdown-content">
+          <a href="{{ url_for('azure_overview') }}">Overview</a>
+          <a href="{{ url_for('azure_app_services') }}">App Services</a>
+          <a href="{{ url_for('azure_storage') }}">Storage</a>
+          <a href="{{ url_for('azure_network') }}">Networking</a>
+          <a href="{{ url_for('azure_tutorials') }}">Tutorials</a>
+          <a href="{{ url_for('azure_guides') }}">Guides</a>
+        </div>
+      </li>
+      <li><a href="{{ url_for('other_resources') }}">Other Resources</a></li>
+    </ul>
+    <div class="nav-search">
+      <form action="{{ url_for('search') }}" method="get">
+        <input type="text" name="q" placeholder="Search tutorials..." aria-label="Search tutorials">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      ☰
+    </button>
+  </nav>
+
+  <script>
+    // Mobile menu toggle
+    document.querySelector('.nav-toggle').addEventListener('click', function() {
+      const navLinks = document.querySelector('.nav-links');
+      const expanded = this.getAttribute('aria-expanded') === 'true';
+      this.setAttribute('aria-expanded', !expanded);
+      navLinks.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
