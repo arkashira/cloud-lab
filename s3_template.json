@@ -1,0 +1,113 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Pre-configured S3 bucket template for cloud-lab. Creates one or more buckets with versioning enabled and a basic bucket policy granting the specified permissions.",
+  "Parameters": {
+    "BucketNames": {
+      "Type": "List<String>",
+      "Description": "List of S3 bucket names to create."
+    },
+    "PolicyActions": {
+      "Type": "List<String>",
+      "Default": [
+        "s3:GetObject"
+      ],
+      "Description": "List of S3 actions to allow in the bucket policy (e.g., s3:GetObject, s3:PutObject)."
+    },
+    "PolicyPrincipals": {
+      "Type": "List<String>",
+      "Default": [
+        "*"
+      ],
+      "Description": "List of AWS principals (ARNs or '*') that the policy applies to."
+    },
+    "PublicAccess": {
+      "Type": "Boolean",
+      "Default": false,
+      "Description": "Enable public access for the bucket."
+    }
+  },
+  "Resources": {
+    "S3Buckets": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Select": [ 0, { "Ref": "BucketNames" } ] },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "Metadata": {
+        "Comment": "First bucket – additional buckets are created via a loop in the Transform section."
+      }
+    },
+    "AdditionalBuckets": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "HasMultipleBuckets",
+      "Properties": {
+        "TemplateURL": { "Fn::Sub": "https://s3.amazonaws.com/${AWS::StackName}/additional_buckets.yaml" },
+        "Parameters": {
+          "BucketNames": { "Fn::Join": [ ",", { "Fn::Slice": [ { "Ref": "BucketNames" }, 1, { "Fn::Length": { "Ref": "BucketNames" } } ] } ] }
+        }
+      }
+    },
+    "BucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": { "Ref": "S3Buckets" },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowSpecifiedActions",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": { "Fn::If": [ "HasPrincipals", { "Fn::Join": [ ",", { "Ref": "PolicyPrincipals" } ] }, "*" ] }
+              },
+              "Action": { "Ref": "PolicyActions" },
+              "Resource": { "Fn::Join": [ "", [ "arn:aws:s3:::", { "Ref": "S3Buckets" }, "/*" ] ] }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Conditions": {
+    "HasMultipleBuckets": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            { "Fn::Length": { "Ref": "BucketNames" } },
+            1
+          ]
+        }
+      ]
+    },
+    "HasPrincipals": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            { "Fn::Length": { "Ref": "PolicyPrincipals" } },
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "BucketNamesCreated": {
+      "Description": "Names of the S3 buckets created by this template.",
+      "Value": { "Ref": "BucketNames" }
+    },
+    "BucketArn": {
+      "Description": "ARN of the primary bucket.",
+      "Value": { "Fn::GetAtt": [ "S3Buckets", "Arn" ] }
+    }
+  },
+  "Transform": {
+    "AWS::Include": {
+      "Name": "additional_buckets.yaml",
+      "Parameters": {
+        "BucketNames": { "Fn::Join": [ ",", { "Fn::Slice": [ { "Ref": "BucketNames" }, 1, { "Fn::Length": { "Ref": "BucketNames" } } ] } ] }
+      }
+    }
+  }
+}
